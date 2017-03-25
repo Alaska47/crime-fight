@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_intro"
@@ -10,16 +10,32 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/gray"
+    android:orientation="vertical"
     tools:context="com.crimefighter.crimefighter.IntroActivity">
 
     <TextView
-        android:id="@+id/into_text_view"
+        android:id="@+id/intro_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:text="CRIMEFIGHTER"
         android:textColor="@color/white"
+        android:textSize="35sp"
         android:gravity="center"/>
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/intro_subtext"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Crime solutions for the digital age"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:gravity="center"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>

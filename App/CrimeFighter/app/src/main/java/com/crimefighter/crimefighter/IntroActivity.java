@@ -16,7 +16,7 @@ public class IntroActivity extends AppCompatActivity {
         setContentView(R.layout.activity_intro);
 
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
-        mTextView = (TextView)findViewById(R.id.into_text_view);
+        mTextView = (TextView)findViewById(R.id.intro_title);
         mTextView.setTypeface(mTypeface);
 
     }
