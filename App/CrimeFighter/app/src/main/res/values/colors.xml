@@ -3,9 +3,9 @@
     <color name="colorPrimary">#21CE99</color>
     <color name="colorPrimaryDark">#040D14</color>
     <color name="colorAccent">#F45531</color>
-    
-    <color name="Green">#21CE99</color>
-    <color name="Gray">#040D14</color>
-    <color name="Red">#F45531</color>
-    <color name="White">#FFFFFF</color>
+
+    <color name="green">#21CE99</color>
+    <color name="gray">#040D14</color>
+    <color name="red">#F45531</color>
+    <color name="white">#FFFFFF</color>
 </resources>
