@@ -14,9 +14,11 @@ import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.crimefighter.crimefighter.R;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,6 +41,7 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
     private TextView mNameTextView;
     private TextView mDistanceTextView;
     private TextView mDescriptionTextView;
+    private Button mButton;
 
     private static final int PERMISSIONS_MAP = 1337;
     private static Location userLoc;
@@ -52,12 +55,14 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
         setContentView(R.layout.activity_stolen);
 
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
-        mNameTextView = (TextView)findViewById(R.id.stolen_name);
+        mNameTextView = (TextView)findViewById(R.id.name);
         mNameTextView.setTypeface(mTypeface);
-        mDistanceTextView = (TextView)findViewById(R.id.stolen_distance);
+        mDistanceTextView = (TextView)findViewById(R.id.distance);
         mDistanceTextView.setTypeface(mTypeface);
-        mDescriptionTextView = (TextView)findViewById(R.id.stolen_description);
+        mDescriptionTextView = (TextView)findViewById(R.id.description);
         mDescriptionTextView.setTypeface(mTypeface);
+        mButton = (Button)findViewById(R.id.button);
+        mButton.setTypeface(mTypeface);
 
 
 

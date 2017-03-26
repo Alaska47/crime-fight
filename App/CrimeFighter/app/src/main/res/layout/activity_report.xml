@@ -6,9 +6,6 @@
     android:id="@+id/activity_intro"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="8dp"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/green"
     android:orientation="vertical"
@@ -16,10 +13,12 @@
 
 
     <TextView
-        android:id="@+id/report_title"
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_weight="2"
         android:text="Report"
         android:textColor="@color/white"
         android:textSize="35sp"
@@ -30,7 +29,9 @@
         android:id="@+id/time_input_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_weight="2"
         app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
 
         <EditText
@@ -49,7 +50,9 @@
         android:id="@+id/username_input_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_weight="2"
         app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
 
         <EditText
@@ -68,7 +71,9 @@
         android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_weight="3"
         app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
 
         <EditText
@@ -77,7 +82,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:imeOptions="actionDone"
-            android:hint="Description of Thief" />
+            android:hint="Description of Object and Thief" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -85,24 +90,17 @@
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3"/>
+        android:layout_weight="7"/>
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingBottom="15sp"
-        android:layout_gravity="center">
+    <Button
+        android:id="@+id/report_button"
+        android:layout_width="match_parent"
+        android:layout_height="60sp"
+        android:background="@color/white"
+        android:layout_alignParentBottom="true"
+        android:textSize="17sp"
+        android:text="Report"/>
 
-        <Button
-            android:id="@+id/report_button"
-            android:layout_width="130sp"
-            android:layout_height="50sp"
-            android:theme="@style/AppTheme.WhiteButton"
-            android:layout_alignParentBottom="true"
-            android:text="Report"/>
-
-    </RelativeLayout>
 
 
 </LinearLayout>

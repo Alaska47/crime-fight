@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.crimefighter.crimefighter.R;
 import com.google.android.gms.maps.CameraUpdate;
@@ -32,6 +34,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
+
+import org.w3c.dom.Text;
 
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -53,6 +57,8 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     private static GoogleMap mMap;
     private Bundle mBundle;
 
+    private Typeface mTypeface;
+    private TextView mTitle;
     private EditText mItemName;
     private EditText mTime;
     private EditText mDescription;
@@ -71,10 +77,17 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
 
+        mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
+        mTitle = (TextView)findViewById(R.id.title);
+        mTitle.setTypeface(mTypeface);
         mItemName = (EditText)findViewById(R.id.name_edit_text);
+        mItemName.setTypeface(mTypeface);
         mTime = (EditText)findViewById(R.id.time_edit_text);
+        mTime.setTypeface(mTypeface);
         mDescription = (EditText)findViewById(R.id.description_edit_text);
+        mDescription.setTypeface(mTypeface);
         mReportButton = (Button) findViewById(R.id.report_button);
+        mReportButton.setTypeface(mTypeface);
 
         mReportButton.setOnClickListener(new View.OnClickListener() {
             @Override

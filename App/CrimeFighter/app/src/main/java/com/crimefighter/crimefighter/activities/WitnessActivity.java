@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -13,6 +14,9 @@ import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.crimefighter.crimefighter.R;
 import com.google.android.gms.maps.CameraUpdate;
@@ -39,10 +43,27 @@ public class WitnessActivity extends AppCompatActivity implements OnMapReadyCall
     private static GoogleMap mMap;
     private Bundle mBundle;
 
+    private Typeface mTypeface;
+    private TextView mTitle;
+    private EditText mTime;
+    private EditText mDescription;
+    private Button mReportButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_witness);
+
+        mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
+        mTitle = (TextView)findViewById(R.id.title);
+        mTitle.setTypeface(mTypeface);
+        mTime = (EditText)findViewById(R.id.time_edit_text);
+        mTime.setTypeface(mTypeface);
+        mDescription = (EditText)findViewById(R.id.description_edit_text);
+        mDescription.setTypeface(mTypeface);
+        mReportButton = (Button) findViewById(R.id.report_button);
+        mReportButton.setTypeface(mTypeface);
+
         if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     PERMISSIONS_MAP);

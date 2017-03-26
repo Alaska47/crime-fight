@@ -39,26 +39,27 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBxabYQBhUzt7iBSSc4c9FZUMiNvfquMQo"/>
 
-        <activity android:name=".activities.IntroActivity">
+        <activity android:name=".activities.IntroActivity"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activities.LoginActivity">
+        <activity android:name=".activities.LoginActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.ReportActivity">
+        <activity android:name=".activities.ReportActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".activities.MainActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.FoundActivity">
+        <activity android:name=".activities.FoundActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.WitnessActivity">
+        <activity android:name=".activities.WitnessActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.StolenActivity">
+        <activity android:name=".activities.StolenActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".activities.WaitActivity">
+        <activity android:name=".activities.WaitActivity" android:screenOrientation="portrait">
         </activity>
     </application>
 
