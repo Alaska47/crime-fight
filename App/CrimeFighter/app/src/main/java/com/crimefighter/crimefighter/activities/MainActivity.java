@@ -15,6 +15,7 @@ import android.graphics.Typeface;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.annotation.IntegerRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         Log.d("RecentItems", mess);
+                        initializeData(mess);
                     }
                 }).start();
 
@@ -183,6 +185,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void initializeData(String input) {
+        String[] values = input.split(" ");
+        int num = Integer.parseInt(values[0]);
+        for(int i=0; i<num; i++) {
+            //num, name, distance, description
+            Location ad = userLoc;
+            ad.setLatitude(0.0);
+            ad.setLongitude(0.0);
+            items.add(new Item((i+1), values[i*4+1], Double.parseDouble(values[i*4+3]), values[i*4+2],ad));
+        }
+    }
+
     private void initializeData(){
         items = new ArrayList<>();
         Random rand = new Random();
@@ -197,10 +211,13 @@ public class MainActivity extends AppCompatActivity {
             THIS SHIT SHOULD BE IN A FOR LOOP dont be retarded
          */
 
-        
-        items.add(new Item(1, "Chocolates", 0.001, "random shit"));
-        items.add(new Item(2, "Backpack", 0.5, "random shit"));
-        items.add(new Item(3, "Bicycle", 0.75, "random shit"));
+        Location ad = userLoc;
+        ad.setLatitude(0.0);
+        ad.setLongitude(0.0);
+
+        items.add(new Item(1, "Chocolates", 0.001, "random shit",ad));
+        items.add(new Item(2, "Backpack", 0.5, "random shit",ad));
+        items.add(new Item(3, "Bicycle", 0.75, "random shit",ad));
     }
 
     private void initializeAdapter(){
