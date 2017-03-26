@@ -19,15 +19,19 @@ public class ConnectionTester {
 		BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
 		ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
+		ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
 
 		//PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-		String query = "3,42069,MLH Alienware Laptop,Left at Hardware booth,38.8189742,-77.1681981\n";
+		String query = "2,18109,38.8190096,-77.168153";
+		//String query = "3,42069,MLH Alienware Laptop,Left at Hardware booth,38.8189742,-77.1681981\n";
 		System.out.println("Sending <" + query + ">");
 		oos.writeObject(query);
 		//out.println("gay faf");
 		//out.flush();
 		System.out.println("Received: ");
-		System.out.println(in.readLine());
+		System.out.println(ois.readObject());
+		System.out.println("Received: ");
+		System.out.println(ois.readObject());
 		in.close();
 		oos.close();
 		System.out.println("Done");
