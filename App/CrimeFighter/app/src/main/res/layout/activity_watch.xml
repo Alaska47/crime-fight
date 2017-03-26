@@ -46,6 +46,27 @@
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
+        android:layout_margin="1dp"
+        android:id="@+id/username_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_weight="2"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
+
+        <EditText
+            android:id="@+id/time_edit_text"
+            android:layout_width="match_parent"
+            android:inputType="text"
+            android:imeOptions="actionNext"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:hint="Time" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
         android:id="@+id/thief_description"
         android:layout_margin="5dp"
         android:layout_width="match_parent"
