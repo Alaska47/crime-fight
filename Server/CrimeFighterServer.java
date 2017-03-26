@@ -124,7 +124,7 @@ class ConnectionHandler implements Runnable {
          System.out.println("Identified request type as " + requestType);
          double lat;
          double lon;
-         int userID;
+         int userID, itemID;
          Document docUpdate;
          Document queryDoc;
          String itemName,itemDesc;
@@ -191,26 +191,13 @@ class ConnectionHandler implements Runnable {
                for(Document d : CrimeFighterServer.watchItems.find()) {
                	   c ++;
                	   responseMessage += d.get("itemName") + "," + d.get("itemDesc") + ",";
-               	   responseMessage += "" + distance(lat, lon, (Double) d.get("lat"), (Double) d.get("long")) + ",";
+               	   responseMessage += "" + distance(lat, lon, (Double) d.get("curLat"), (Double) d.get("curLong")) + ",";
+               	   responseMessage += "" + d.get("curLat") + "," + d.get("curLong") + ",";
                	   responseMessage += d.get("itemID") + ",";
                }
-               responseMessage = "" + c + responseMessage.substring(0, responseMessage.length() - 1);
+               responseMessage = "" + c + "," + responseMessage.substring(0, responseMessage.length() - 1);
                System.out.println("Responding to userID " + userID + " with responseMsg: ");
                System.out.println(responseMessage);
-
-              
-              // now we send the images (after string has been received and parsed)
-               /*for(Beacon tmp : nearbyBeacons) {
-                           // (Buffered Image)   , 
-                  BufferedImage bi = tmp.getFeatureImage();
-                  ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                  ImageIO.write( bi, "png", baos );
-                  baos.flush();
-                  byte[] imageInByte = baos.toByteArray();
-                  baos.close();
-                  oos.writeObject(imageInByte); 
-                  //ImageIO.write(tmp.getFeatureImage(), "png", os);
-               }*/
             
                break;
          
@@ -230,120 +217,23 @@ class ConnectionHandler implements Runnable {
 
                break;
 
-
-/*
-            case 3:
-               int beaconID = Integer.parseInt(params[1]);
-               Beacon target = myParent.getBeaconById(beaconID);
-               ArrayList<PhotoWrapper> photos = target.getPhotos();
-               String response = "" + photos.size();
-               if(target.isBusiness()) {
-                  response = response + " 1";
+            case 4:
+               itemID = Integer.parseInt(params[1]);
+               queryDoc = CrimeFighterServer.watchItems.find(Filters.eq("itemID",itemID)).first();
+               if(params[2].equalsIgnoreCase("y")) {
+               	  // confirm seen, just update time
+               	   long newLastSeenTime = new Date().getTime();
+               	   docUpdate = new Document("ownerID",queryDoc.get("ownerID")).append("itemID",queryDoc.get("itemID")).append("itemName",queryDoc.get("itemName"))
+               	   								.append("itemDesc",queryDoc.get("itemDesc")).append("curLat",queryDoc.get("curLat")).append("curLong",queryDoc.get("curLong"))
+               	   								.append("lastTime", newLastSeenTime);
+               } else {
+               		// oh no, it's stolen 
+               		int ownerID = (Integer) queryDoc.get("ownerID");
+               		Document randomDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID",ownerID)).first();
+               		String stolenMessage = "Your item [" + queryDoc.get("itemName") + "] has been reported missing/stolen";
+               		stolenMessage = stolenMessage.replace(" ","%20");
+               		NotificationSender.sendNotification(stolenMessage, new String[] {(String) randomDoc.get("authKey")});
                }
-               else {
-                  response = response + " 0";
-               }
-               //pw.println(response);
-               oos.writeObject(response);
-               
-               if(target.isBusiness()) {
-               // next 3 lines are business crap
-                  
-                  //pw.println(target.getBusiness().getName());
-                  //pw.println(target.getBusiness().getDescription());
-                  //pw.println(target.getBusiness().getAddress());
-                  
-                  oos.writeObject(target.getBusiness().getName());
-                  oos.writeObject(target.getBusiness().getDescription());
-                  oos.writeObject(target.getBusiness().getAddress());
-               }
-               for(int j = 0; j < photos.size(); j ++) {
-               // new line for each photo, 1st thing on the line is an int, num of likes, rest are tags (strings)
-                  String thisline = "" + (new Random(j)).nextInt(11);
-                  for(String s : photos.get(j).getTags()) {
-                     thisline = thisline + " " + s;
-                  }
-                  //pw.println(thisline);
-                  oos.writeObject(thisline);
-               }
-               for(int i = 0; i < photos.size(); i ++) {
-                  BufferedImage bi = photos.get(i).getImage();
-                  //ImageIO.write(photos.get(i).getImage(), "png", os);
-                  ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                  ImageIO.write( bi, "png", baos );
-                  baos.flush();
-                  byte[] imageInByte = baos.toByteArray();
-                  baos.close();
-                  oos.writeObject(imageInByte);
-               }
-               break;
-            case 5:
-              // guy is sending us stuff, format:
-              // 5 [lat] [lon] [tag1] [tag2] ... [tag3]
-               lat = Double.parseDouble(params[1]);
-               lon = Double.parseDouble(params[2]);
-               System.out.println("Parsed lat and lon as " + lat + ", " + lon);
-               String[] tags = new String[(params.length - 3)];
-               for(int i = 0; i < params.length - 3; i ++) {
-                  tags[i] = params[3+i];
-               }
-            
-              // receive actual image (just one)
-               System.out.println("Now attempting to read image");
-               
-               byte[] bb = null;
-               try {
-                  bb = (byte[]) ois.readObject();
-               } 
-               catch(ClassNotFoundException e) {
-                  e.printStackTrace();
-               }
-               
-               InputStream in = new ByteArrayInputStream(bb);
-               BufferedImage img = ImageIO.read(in);
-               
-              //BufferedImage img = ImageIO.read(mySocketClient.getInputStream());
-            
-              //BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-              //DataInputStream dis = new DataInputStream
-            
-               System.out.println("Image read");
-              // done
-               myParent.addPhoto(img, tags, new Location(lat, lon));
-            
-               break;
-            case 6:
-              // request to add a business
-              // format: 
-              // 5 [lat] [lon]
-              // then, as SEPARATE LINE
-              // [Business Name] (space supported)
-              // then, as SEPARATE LINE
-              // [Mini description] (space supported)
-               lat = Double.parseDouble(params[1]);
-               lon = Double.parseDouble(params[2]);
-               
-               //String businessName = br.readLine();
-               //String businessDescription = br.readLine();
-               //String businessAddress = br.readLine();
-               
-               
-               String businessName = "";
-               String businessDescription = "";
-               String businessAddress = "";
-               
-               try {
-                  businessName = (String) ois.readObject();
-                  businessDescription = (String) ois.readObject();
-                  businessAddress = (String) ois.readObject();
-               } 
-               catch (ClassNotFoundException e) {
-                  e.printStackTrace();
-               }
-               
-               Business newBus = new Business(businessName, businessDescription, businessAddress, new Location(lat,lon));
-               myParent.addBusiness(newBus);
-               break;*/
             default:
                break;
          }
