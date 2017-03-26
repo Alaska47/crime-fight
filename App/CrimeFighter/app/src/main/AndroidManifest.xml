@@ -29,6 +29,8 @@
         </activity>
         <activity android:name=".activities.WitnessActivity">
         </activity>
+        <activity android:name=".activities.StolenActivity">
+        </activity>
     </application>
 
 </manifest>
