@@ -1,1 +1,6 @@
-/App/CrimeFighter/build.gradle
+/*
+!/App
+/App/*
+!/App/CrimeFighter
+/App/CrimeFighter/*
+!/App/CrimeFighter/app
