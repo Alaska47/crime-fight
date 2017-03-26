@@ -303,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 socket = new Socket(host, portNumber);
                 oos = new ObjectOutputStream(socket.getOutputStream());
-                String commandStr = "2," + getData("UserID") + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude());
+                String commandStr = "2," + getData("UserID") + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude()) + "," + PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("regID", "");
                 Log.d("commandStr", commandStr);
                 oos.writeObject(commandStr);
                 ois = new ObjectInputStream(socket.getInputStream());

@@ -83,6 +83,11 @@ public class MyGcmListenerService extends GcmListenerService {
     private void sendNotificationStolen(String[] message) {
         Intent intent = new Intent(this, StolenActivity.class); //updateintent
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("name", message[1]);
+        intent.putExtra("description", message[2]);
+        intent.putExtra("distance", message[3]);
+        intent.putExtra("stealID", message[4]);
+        intent.putExtra("location", new String[] {message[5],message[6]});
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 

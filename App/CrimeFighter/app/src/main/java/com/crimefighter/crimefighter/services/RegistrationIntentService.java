@@ -57,7 +57,7 @@ public class RegistrationIntentService extends IntentService {
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
 
-            PreferenceManager.getDefaultSharedPreferences(this).edit().putString("regID", token).commit();
+            PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit().putString("regID", token).commit();
 
             sendRegistrationToServer(token);
 

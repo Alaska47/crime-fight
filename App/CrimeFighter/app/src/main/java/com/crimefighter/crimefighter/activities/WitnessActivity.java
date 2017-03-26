@@ -2,21 +2,25 @@ package com.crimefighter.crimefighter.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
 import com.google.android.gms.maps.CameraUpdate;
@@ -32,6 +36,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.concurrent.ExecutionException;
+
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
@@ -43,16 +55,37 @@ public class WitnessActivity extends AppCompatActivity implements OnMapReadyCall
     private static GoogleMap mMap;
     private Bundle mBundle;
 
+    final String host = "71.171.96.88";
+    final int portNumber = 914;
+
     private Typeface mTypeface;
     private TextView mTitle;
     private EditText mTime;
     private EditText mDescription;
     private Button mReportButton;
 
+    String sTitle;
+    String sTime;
+    String sDescription;
+
+    private String stealID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_witness);
+
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                stealID = null;
+            } else {
+                stealID = extras.getString("stealID");
+            }
+        } else {
+            stealID = (String) savedInstanceState.getSerializable("stealID");
+        }
 
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mTitle = (TextView)findViewById(R.id.title);
@@ -63,6 +96,33 @@ public class WitnessActivity extends AppCompatActivity implements OnMapReadyCall
         mDescription.setTypeface(mTypeface);
         mReportButton = (Button) findViewById(R.id.report_button);
         mReportButton.setTypeface(mTypeface);
+
+        mReportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sTitle = mTitle.getText().toString();
+                sTime = mTitle.getText().toString();
+                sDescription = mDescription.getText().toString();
+
+                try {
+                    new WitnessActivitySender().execute().get();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(
+                        new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                Intent a = new Intent(getApplicationContext(), MainActivity.class);
+                a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(a);
+            }
+        });
 
         if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -217,5 +277,38 @@ public class WitnessActivity extends AppCompatActivity implements OnMapReadyCall
     @Override
     public void onStop() {
         super.onStop();
+    }
+
+    class WitnessActivitySender extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+        @Override
+        protected String doInBackground (Void...params){
+            Socket socket = null;
+            ObjectOutputStream oos = null;
+            String message = "";
+            try {
+                socket = new Socket(host, portNumber);
+                oos = new ObjectOutputStream(socket.getOutputStream());
+                String commandStr = "6," + stealID + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude()) + "," + sTitle + "," + sDescription + "," + sTime;
+                Log.d("commandStr", commandStr);
+                oos.writeObject(commandStr);
+                oos.close();
+                socket.close();
+            } catch (UnknownHostException e) {
+                return "erroruhe";
+            } catch (SocketTimeoutException e) {
+                return "errorste";
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                return sw.toString();
+            }
+            return "";
+        }
     }
 }
