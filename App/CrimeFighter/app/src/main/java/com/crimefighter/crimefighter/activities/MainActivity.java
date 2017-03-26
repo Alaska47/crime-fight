@@ -180,11 +180,24 @@ public class MainActivity extends AppCompatActivity {
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         alarm.cancel(pIntent);
+
     }
 
     private void initializeData(){
         items = new ArrayList<>();
         Random rand = new Random();
+        /*
+        MIHIR
+            create the location stuff like this
+            Location ad = userLoc;
+            ad.setLatitude(0.0);
+            ad.setLongitude(0.0);
+            and put ad right next to "random shit"
+
+            THIS SHIT SHOULD BE IN A FOR LOOP dont be retarded
+         */
+
+        
         items.add(new Item(1, "Chocolates", 0.001, "random shit"));
         items.add(new Item(2, "Backpack", 0.5, "random shit"));
         items.add(new Item(3, "Bicycle", 0.75, "random shit"));
