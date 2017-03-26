@@ -116,7 +116,12 @@
             android:exported="false">
         </service>
 
-        <activity android:name=".activities.WatchActivity" android:screenOrientation="portrait">>
+        <activity
+            android:name=".activities.WatchActivity"
+            android:screenOrientation="portrait">
+            >
+        </activity>
+        <activity android:name=".activities.AnalyticsActivity">
         </activity>
     </application>
 
