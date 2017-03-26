@@ -15,20 +15,20 @@
     tools:context="com.crimefighter.crimefighter.LoginActivity">
 
     <TextView
-        android:id="@+id/intro_title"
+        android:id="@+id/login_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="4"
         android:text="CRIMEFIGHTER"
         android:textColor="@color/white"
         android:textSize="35sp"
         android:gravity="center"/>
 
     <TextView
-        android:id="@+id/intro_subtext"
+        android:id="@+id/login_subtext"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="4"
         android:text="Log In"
         android:textColor="@color/black"
         android:textSize="35sp"
@@ -37,12 +37,12 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="6"
         android:orientation="vertical">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/username_input_layout"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hintTextAppearance="@android:style/TextAppearance.Medium">
 
@@ -50,13 +50,14 @@
                 android:id="@+id/username_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:hint="Username" />
 
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/password_input_layout"
-            android:layout_width="319dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hintTextAppearance="@android:style/TextAppearance.Medium">
 
@@ -64,9 +65,16 @@
                 android:id="@+id/password_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@color/white"
                 android:hint="Password" />
 
         </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="login"/>
 
     </LinearLayout>
 
