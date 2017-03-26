@@ -11,7 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/gray"
     android:orientation="vertical"
-    tools:context="com.crimefighter.crimefighter.IntroActivity">
+    tools:context="com.crimefighter.crimefighter.activities.IntroActivity">
 
     <TextView
         android:id="@+id/intro_title"
@@ -35,9 +35,12 @@
 
     <Button
         android:id="@+id/intro_button"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:text="advance"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="25dp"
+        android:paddingLeft="25dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:text="Advance"/>
 
 </LinearLayout>

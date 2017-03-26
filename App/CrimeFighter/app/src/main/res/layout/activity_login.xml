@@ -12,7 +12,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/green"
     android:orientation="vertical"
-    tools:context="com.crimefighter.crimefighter.LoginActivity">
+    tools:context="com.crimefighter.crimefighter.activities.LoginActivity">
 
     <TextView
         android:id="@+id/login_title"
