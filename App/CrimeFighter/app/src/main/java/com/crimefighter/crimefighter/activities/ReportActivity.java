@@ -294,7 +294,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
             try {
                 socket = new Socket(host, portNumber);
                 oos = new ObjectOutputStream(socket.getOutputStream());
-                String commandStr = "5," + getData("UserID") + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude()) + "," + sItemName + "," + sTime + "," + sDescription;
+                String commandStr = "5," + getData("UserID") + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude()) + "," + sItemName + "," + sDescription + "," + sTime;
                 Log.d("commandStr", commandStr);
                 oos.writeObject(commandStr);
                 oos.close();
