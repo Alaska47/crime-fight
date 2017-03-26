@@ -198,6 +198,7 @@ class ConnectionHandler implements Runnable {
                responseMessage = "" + c + "," + responseMessage.substring(0, responseMessage.length() - 1);
                System.out.println("Responding to userID " + userID + " with responseMsg: ");
                System.out.println(responseMessage);
+               oos.writeObject(responseMessage);
             
                break;
          
@@ -234,6 +235,9 @@ class ConnectionHandler implements Runnable {
                		stolenMessage = stolenMessage.replace(" ","%20");
                		NotificationSender.sendNotification(stolenMessage, new String[] {(String) randomDoc.get("authKey")});
                }
+               break;
+            case 5:
+
             default:
                break;
          }
