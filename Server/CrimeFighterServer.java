@@ -129,7 +129,7 @@ class ConnectionHandler implements Runnable {
          Document queryDoc;
          String itemName,itemDesc;
          switch(requestType) {
-         	case 0
+         	case 0:
                userID = Integer.parseInt(params[1]);
                String authKey = params[2];
                queryDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first();
@@ -139,6 +139,7 @@ class ConnectionHandler implements Runnable {
                } else {
                	   CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), docUpdate);
                }
+               break;
             case 1:
 
                userID = Integer.parseInt(params[1]);
@@ -224,7 +225,7 @@ class ConnectionHandler implements Runnable {
 
                docUpdate = new Document("ownerID",userID).append("itemID", CrimeFighterServer.lastItemID++).append("curLat",lat).append("curLong", lon).append("lastTime", new Date().getTime());
                CrimeFighterServer.watchItems.insertOne(docUpdate);
-               
+
                break;
 
 
