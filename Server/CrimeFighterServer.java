@@ -88,7 +88,7 @@ class ConnectionHandler implements Runnable {
    public void run() {
    
    	  System.out.println("ConnectionHandler " + myID + " DOES in fact exist");
-   	  
+
       ObjectInputStream ois = null;
       ObjectOutputStream oos = null;
    
@@ -130,9 +130,11 @@ class ConnectionHandler implements Runnable {
                lat = Double.parseDouble(params[2]);
                lon = Double.parseDouble(params[3]);
                locationUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon);
-               CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), locationUpdate);
-               //
-
+               if(CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first() == null) {
+               	   CrimeFighterServer.userInfo.insertOne(locationUpdate);
+               } else {
+                   CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), locationUpdate);
+               }
 
                /*oos.writeObject(10);
               // startup, give us 10 buffered images and ???
@@ -158,7 +160,11 @@ class ConnectionHandler implements Runnable {
                lat = Double.parseDouble(params[2]);
                lon = Double.parseDouble(params[3]);
                locationUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon);
-               CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), locationUpdate);
+               if(CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first() == null) {
+               	   CrimeFighterServer.userInfo.insertOne(locationUpdate);
+               } else {
+                   CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), locationUpdate);
+               }
                String responseMessage = "";
                int c = 0;
                for(Document d : CrimeFighterServer.watchItems.find()) {
