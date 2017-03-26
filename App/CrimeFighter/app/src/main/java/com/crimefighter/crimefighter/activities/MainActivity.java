@@ -127,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         Log.d("RecentItems", mess);
+                        //TODO: convert mess to real sht
                     }
                 }).start();
 
