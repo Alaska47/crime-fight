@@ -18,9 +18,11 @@ public class CrimeFighterServer
    public static final int PORT_NUMBER = 914;
 
    public static int lastItemID = 111;
+   public static int lastStealID = 555;
 
    public static MongoCollection<Document> userInfo;
    public static MongoCollection<Document> watchItems;
+   public static MongoCollection<Document> stolenStuff;
 
    public static void main(String[] args) {
       try {
@@ -46,6 +48,7 @@ public class CrimeFighterServer
       MongoDatabase database = mongoClient.getDatabase("mydb");
       userInfo = database.getCollection("userInfo");
       watchItems = database.getCollection("watchItems");
+      stolenStuff = database.getCollection("stolenStuff");
       System.out.println("[CrimeFighterServer] database collection successfully retrieved");
 
       ServerSocket serverSocket;
@@ -121,7 +124,7 @@ class ConnectionHandler implements Runnable {
          String[] params = request.split(",");
          System.out.println(params);
          int requestType = Integer.parseInt(params[0]);
-         System.out.println("Identified request type as " + requestType);
+         System.out.println("Identified request type as CASE " + requestType);
          double lat;
          double lon;
          int userID, itemID;
@@ -177,9 +180,10 @@ class ConnectionHandler implements Runnable {
                userID = Integer.parseInt(params[1]);
                lat = Double.parseDouble(params[2]);
                lon = Double.parseDouble(params[3]);
+               String akey = params[4];
                queryDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first();
                if(queryDoc == null) {
-               	   docUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon).append("authKey","000000000000");
+               	   docUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon).append("authKey",akey);
                	   CrimeFighterServer.userInfo.insertOne(docUpdate);
                } else {
                	   docUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon).append("authKey",queryDoc.get("authKey"));
@@ -231,13 +235,41 @@ class ConnectionHandler implements Runnable {
                		// oh no, it's stolen 
                		int ownerID = (Integer) queryDoc.get("ownerID");
                		Document randomDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID",ownerID)).first();
-               		String stolenMessage = "Your item [" + queryDoc.get("itemName") + "] has been reported missing/stolen";
+               		String stolenMessage = "recovery," + queryDoc.get("itemName") + "," + ((new Date().getTime()) - (Long) queryDoc.get("lastTime"));
+               		//String stolenMessage = "Your item [" + queryDoc.get("itemName") + "] has been reported missing/stolen";
                		stolenMessage = stolenMessage.replace(" ","%20");
+               		CrimeFighterServer.watchItems.deleteOne(Filters.eq("itemID",itemID));
                		NotificationSender.sendNotification(stolenMessage, new String[] {(String) randomDoc.get("authKey")});
+
+               		String nMessage = "stolen," + queryDoc.get("itemName") + "," + queryDoc.get("itemDesc");
+               		nMessage = nMessage.replace(" ","%20");
+               		for(Document d : CrimeFighterServer.userInfo.find()) {
+               			   NotificationSender.sendNotification(nMessage, new String[] {(String) d.get("authKey")});
+               		}
                }
                break;
             case 5:
-
+               userID = Integer.parseInt(params[1]);
+               lat = Double.parseDouble(params[2]);
+               lon = Double.parseDouble(params[3]);
+               int nStealID = CrimeFighterServer.lastStealID++;
+               CrimeFighterServer.stolenStuff.insertOne(new Document("stealID",nStealID).append("ownerID",userID));
+               itemName = params[4];
+               itemDesc = params[5];
+               String newMessage;
+               for(Document d : CrimeFighterServer.userInfo.find()) {
+               	   newMessage = "stolen," + itemName + "," + itemDesc + "," +  distance(lat, lon, (Double) d.get("curLat"), (Double) d.get("curLong"))  +"," + nStealID + "," +  lat + "," + lon;
+	               newMessage = newMessage.replace(" ","%20");
+               	   NotificationSender.sendNotification(newMessage, new String[] {(String) d.get("authKey")});
+               }
+               break;
+            case 6:
+               int sID = Integer.parseInt(params[1]);
+               // send a notification to the guy who owned this thing
+               Document targetDude = CrimeFighterServer.stolenStuff.find(Filters.eq("stealID",sID)).first();
+               // now send it to targetDude["ownerID"]
+               NotificationSender.sendNotification("found", new String[] {(String) CrimeFighterServer.userInfo.find(Filters.eq("userID",targetDude.get("ownerID"))).first().get("authKey")});
+               break;
             default:
                break;
          }
