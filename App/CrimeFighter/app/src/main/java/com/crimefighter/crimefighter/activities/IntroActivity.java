@@ -2,6 +2,12 @@ package com.crimefighter.crimefighter.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AlphaAnimation;
@@ -16,6 +22,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.crimefighter.crimefighter.R;
+import com.crimefighter.crimefighter.services.RegistrationIntentService;
+import com.crimefighter.crimefighter.utils.QuickstartPreferences;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import java.util.TimerTask;
 
@@ -26,6 +36,11 @@ public class IntroActivity extends AppCompatActivity {
     private TextView mSubTextTextView;
     public TextView mIntroText;
 
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+    private boolean isReceiverRegistered;
+
+    final String userID = "18109";
+
     public void advance() {
         Intent intent = new Intent(this,LoginActivity.class);
         startActivity(intent);
@@ -35,6 +50,8 @@ public class IntroActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
+
+        storeData("UserID", userID);
 
         LinearLayout rlayout = (LinearLayout) findViewById(R.id.activity_intro);
         rlayout.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +99,72 @@ public class IntroActivity extends AppCompatActivity {
 
         mIntroText.startAnimation(in);
 
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+            Log.i("gu", "started");
+        }
 
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+            }
+        };
+        registerReceiver();
+
+
+
+
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+        isReceiverRegistered = false;
+        super.onPause();
+    }
+
+    private void registerReceiver(){
+        if(!isReceiverRegistered) {
+            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
+                    new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
+            isReceiverRegistered = true;
+        }
+    }
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, 9000)
+                        .show();
+            } else {
+                Log.i("gu", "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    public void storeData(String key, String value) {
+        SharedPreferences.Editor editor = getSharedPreferences("XPLORE_PREFS", Context.MODE_PRIVATE).edit();
+        editor.putString(key,value);
+        editor.apply();
+    }
+
+    public String getData(String key) {
+        return getSharedPreferences("XPLORE_PREFS", Context.MODE_PRIVATE).getString(key, "");
     }
 
 }
