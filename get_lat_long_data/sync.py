@@ -57,8 +57,5 @@ try:
 	data2_json = json.dumps(data2)
 	headers = {'authId':authId, 'Content-type': 'application/json'}
 	response = requests.post(url3, headers=headers, data=data2_json).json()
-	with open('data.txt', 'w') as outfile:
-		json.dump(response, outfile)
-
 except KeyError:
 	print("Didn't work")
