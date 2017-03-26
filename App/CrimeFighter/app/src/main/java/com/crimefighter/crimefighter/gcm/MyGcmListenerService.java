@@ -103,7 +103,7 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Stolen Item Alert")
                 .setContentText(
-                        message[1]+" was stolen approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
+                        message[1]+" was stolen.") //update message
                 .setAutoCancel(false)
                 .setSound(defaultSoundUri)
                 .setSmallIcon(R.drawable.mini_logo) //update icon
@@ -127,7 +127,7 @@ public class MyGcmListenerService extends GcmListenerService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Your Item Missing")
-                .setContentText("Your "+message[1]+" dissappeared approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
+                .setContentText("Your "+message[1]+" dissappeared.") //update message
                 .setAutoCancel(false)
                 .setSound(defaultSoundUri)
                 .setSmallIcon(R.drawable.mini_logo) //update icon
