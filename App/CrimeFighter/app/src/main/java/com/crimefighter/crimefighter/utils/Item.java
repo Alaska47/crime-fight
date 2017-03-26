@@ -15,7 +15,7 @@ public class Item {
 
     public Item(int id, String name, double distance, String desc, Location d) {
         itemName = name;
-        if (distance < 0.01) {
+        if (distance < 0.05) {
             this.distance = "Near You";
         } else {
             this.distance = Double.toString(distance) + " MI";
