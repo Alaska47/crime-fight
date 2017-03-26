@@ -95,7 +95,7 @@ public class MyGcmListenerService extends GcmListenerService {
         intent.putExtra("description", message[2]);
         intent.putExtra("distance", message[3]);
         intent.putExtra("stealID", message[4]);
-        intent.putExtra("location", new String[] {message[5],message[6]});
+        intent.putExtra("location", message[5] + "," + message[6]);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
         Log.d("NotificationShits", "finished extras");

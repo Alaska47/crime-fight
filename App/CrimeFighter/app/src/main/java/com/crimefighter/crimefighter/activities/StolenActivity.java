@@ -34,6 +34,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
+import java.text.DecimalFormat;
+
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
@@ -47,7 +49,7 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
 
     private static final int PERMISSIONS_MAP = 1337;
     private static Location userLoc;
-    private static String[] realLocation;
+    private static String[] reallyLocation;
     private MapView mMapView;
     private static GoogleMap mMap;
     private Bundle mBundle;
@@ -106,17 +108,28 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
             distance = (String) savedInstanceState.getSerializable("distance");
         }
 
-        String[] realLocation;
+        Log.d("guface_distance", distance);
+
+        double fu = Double.parseDouble(distance);
+        int lu = ((int) (fu * 10000.0));
+        double fd = ((double) lu) / 10000.0;
+
+        distance = Double.toString(fd);
+
+        String realLocation;
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if(extras == null) {
                 realLocation = null;
             } else {
-                realLocation = extras.getStringArray("location");
+                realLocation = extras.getString("location");
             }
         } else {
-            realLocation = (String[]) savedInstanceState.getSerializable("location");
+            realLocation = (String) savedInstanceState.getSerializable("location");
         }
+        Log.d("guface", realLocation);
+
+        reallyLocation = realLocation.split(",");
 
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mNameTextView = (TextView)findViewById(R.id.name);
@@ -125,7 +138,7 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
         mDistanceTextView = (TextView)findViewById(R.id.distance);
         mDistanceTextView.setTypeface(mTypeface);
 
-        if(distance.contains("Near")) {
+        if(distance.contains("Near") || distance.equals("0.0")) {
             mDistanceTextView.setText("Near you");
         } else {
             mDistanceTextView.setText(distance + " miles away");
@@ -205,8 +218,8 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
                                     e.printStackTrace();
                                 }
                             }
-                            userLoc.setLatitude(Double.parseDouble(realLocation[0]));
-                            userLoc.setLongitude(Double.parseDouble(realLocation[1]));
+                            userLoc.setLatitude(Double.parseDouble(reallyLocation[0]));
+                            userLoc.setLongitude(Double.parseDouble(reallyLocation[1]));
                             LatLng newLatLng = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
                             LatLngBounds bounds = new LatLngBounds.Builder().
                                     include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 0)).
