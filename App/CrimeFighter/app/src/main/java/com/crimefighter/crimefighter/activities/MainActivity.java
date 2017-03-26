@@ -129,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         Log.d("RecentItems", mess);
                         initializeData(mess);
+                        initializeAdapter();
                     }
                 }).start();
 
@@ -141,9 +142,8 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
-
         //initializeData();
-        //initializeAdapter();
+        //
 
 
     }
