@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">CrimeFighter</string>
+
+    <!--BANNER AD-->
+    <!--Real Ad-->
+    <string name="banner_ad_unit_id">ca-app-pub-3670882123396960/4772274338</string>
+    <!--Test Ad-->
+    <!--<string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>-->
 </resources>

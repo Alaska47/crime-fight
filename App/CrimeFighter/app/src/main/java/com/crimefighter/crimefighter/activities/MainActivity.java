@@ -33,6 +33,9 @@ import com.crimefighter.crimefighter.services.RegistrationIntentService;
 import com.crimefighter.crimefighter.utils.Item;
 import com.crimefighter.crimefighter.utils.QuickstartPreferences;
 import com.crimefighter.crimefighter.utils.RVAdapter;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
@@ -79,8 +82,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mTitleTextView = (TextView)findViewById(R.id.main_title);
         mTitleTextView.setTypeface(mTypeface);
@@ -95,6 +96,25 @@ public class MainActivity extends AppCompatActivity {
 
         fab = (FloatingActionButton) findViewById(R.id.fabio);
         fab.setImageBitmap(textAsBitmap("!", 40, Color.WHITE));
+
+//        boolean testAd = true;
+//
+//        if(testAd) {
+//            MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713"); //ca-app-pub-3940256099942544~3347511713 DEMO
+//            AdView mAdView = (AdView) findViewById(R.id.adView);
+//            AdRequest request = new AdRequest.Builder()
+//                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
+//                    .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
+//                    .build();
+//            mAdView.loadAd(request);
+//        }
+//        else {
+//            MobileAds.initialize(getApplicationContext(), "ca-app-pub-3670882123396960~3295541137"); //ca-app-pub-3940256099942544~3347511713 DEMO
+//            AdView mAdView = (AdView) findViewById(R.id.adView);
+//            AdRequest request = new AdRequest.Builder()
+//                    .build();
+//            mAdView.loadAd(request);
+//        }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
