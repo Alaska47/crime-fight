@@ -33,6 +33,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
 import com.crimefighter.crimefighter.services.AlarmReceiver;
@@ -75,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
     private Button mButton;
     private FloatingActionButton fab;
     private FloatingActionButton fab1;
+    private FloatingActionButton fab2;
+
     private List<Item> items = new ArrayList<Item>();
     private RecyclerView rv;
     private static Location userLoc;
@@ -101,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         mSolvTextView = (TextView)findViewById(R.id.main_solved);
         mSolvTextView.setTypeface(mTypeface);
 
-        fab = (FloatingActionButton) findViewById(R.id.fabio);
+        fab = (FloatingActionButton) findViewById(R.id.fabio1);
         fab.setImageBitmap(textAsBitmap("!", 40, Color.WHITE));
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +122,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), WatchActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        fab2 = (FloatingActionButton) findViewById(R.id.fabio2);
+
+        fab2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "gu", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -149,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(
                                 new Runnable() {
                                     public void run() {
-                                    Log.d("RecentItems", gg);
                                     initializeData(gg);
                                     initializeAdapter();
                                     }
@@ -225,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
         if(input.equals("")) {
             items.add(new Item(1, "Chocolate", 0.05, "i am a gay homo", userLoc));
         } else {
-            String[] values = input.split(" ");
+            String[] values = input.split(",");
             int num = Integer.parseInt(values[0]);
             for (int i = 0; i < num; i++) {
                 //num, name, distance, description, lat, long
@@ -281,14 +292,13 @@ public class MainActivity extends AppCompatActivity {
                 ois.close();
                 oos.close();
                 socket.close();
-            } catch (ClassNotFoundException e) {
-                return "";
-            } catch (UnknownHostException e) {
-                return "";
-            } catch (SocketTimeoutException e) {
-                return "";
             } catch (Exception e) {
-                return "";
+                StringWriter writer = new StringWriter();
+                PrintWriter printWriter = new PrintWriter( writer );
+                e.printStackTrace( printWriter );
+                printWriter.flush();
+                String stackTrace = writer.toString();
+                Log.d("currStack", stackTrace);
             }
             return message;
         }
