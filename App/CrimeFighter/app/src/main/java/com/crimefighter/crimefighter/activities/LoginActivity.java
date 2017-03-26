@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         mSubTextTextView = (TextView)findViewById(R.id.login_subtext);
         mSubTextTextView.setTypeface(mTypeface);
         mButton = (Button)findViewById(R.id.login_button);
+        mButton.setTypeface(mTypeface);
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

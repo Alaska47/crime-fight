@@ -13,6 +13,7 @@ import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.EditText;
 
 import com.crimefighter.crimefighter.R;
 import com.google.android.gms.maps.CameraUpdate;
@@ -40,10 +41,18 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     private static GoogleMap mMap;
     private Bundle mBundle;
 
+    private EditText mItemName;
+    private EditText mTime;
+    private EditText mDescription;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
+
+        mItemName = (EditText)findViewById(R.id.name_edit_text);
+        mTime = (EditText)findViewById(R.id.time_edit_text);
+        mDescription = (EditText)findViewById(R.id.description_edit_text);
 
         if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},

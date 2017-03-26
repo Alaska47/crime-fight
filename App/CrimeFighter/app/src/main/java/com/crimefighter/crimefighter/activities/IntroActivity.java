@@ -24,7 +24,6 @@ public class IntroActivity extends AppCompatActivity {
     private Typeface mTypeface;
     private TextView mTitleTextView;
     private TextView mSubTextTextView;
-    public TextView textView;
     public TextView mIntroText;
 
     public void advance() {
