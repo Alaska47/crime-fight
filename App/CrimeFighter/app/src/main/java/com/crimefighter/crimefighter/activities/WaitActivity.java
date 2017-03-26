@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
 
@@ -125,6 +126,12 @@ public class WaitActivity extends AppCompatActivity {
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
+                runOnUiThread(
+                        new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
         mButtonGone = (Button)findViewById(R.id.gone);
@@ -139,6 +146,12 @@ public class WaitActivity extends AppCompatActivity {
                 } catch (ExecutionException e) {
                     e.printStackTrace();
                 }
+                runOnUiThread(
+                        new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
 

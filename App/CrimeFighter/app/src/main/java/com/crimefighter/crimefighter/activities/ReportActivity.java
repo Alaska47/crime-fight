@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
 import com.google.android.gms.maps.CameraUpdate;
@@ -119,6 +120,12 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
                                 } catch (ExecutionException e) {
                                     e.printStackTrace();
                                 }
+                                runOnUiThread(
+                                        new Runnable() {
+                                            public void run() {
+                                                Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
                             }
                         }).start();
             }
