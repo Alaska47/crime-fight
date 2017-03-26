@@ -1,5 +1,6 @@
 package com.crimefighter.crimefighter.activities;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,10 +15,12 @@ import com.crimefighter.crimefighter.utils.RVAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Typeface mTypeface;
+    public static Typeface mTypeface;
     private TextView mTitleTextView;
     private TextView mRemNumTextView;
     private TextView mRemTextView;
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private Button mButton;
 
     private List<Item> items;
+    private RecyclerView rv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,20 +48,28 @@ public class MainActivity extends AppCompatActivity {
         mSolvTextView = (TextView)findViewById(R.id.main_solved);
         mSolvTextView.setTypeface(mTypeface);
 
-        RecyclerView rv = (RecyclerView)findViewById(R.id.rv);
-        LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
+
+
+        rv = (RecyclerView)findViewById(R.id.rv);
+
+        LinearLayoutManager llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
+        rv.setHasFixedSize(true);
 
         initializeData();
-
-        RVAdapter adapter = new RVAdapter(items);
-        rv.setAdapter(adapter);
+        initializeAdapter();
     }
 
     private void initializeData(){
         items = new ArrayList<>();
-        items.add(new Item("Chocolates", 0.001));
-        items.add(new Item("Backpack", 0.5));
-        items.add(new Item("Bicycle", 1.25));
+        Random rand = new Random();
+        items.add(new Item(rand.nextInt(80 - 65) + 65, "Chocolates", 0.001, "random shit"));
+        items.add(new Item(rand.nextInt(80 - 65) + 65, "Backpack", 0.5, "random shit"));
+        items.add(new Item(rand.nextInt(80 - 65) + 65, "Bicycle", 0.75, "random shit"));
+    }
+
+    private void initializeAdapter(){
+        RVAdapter adapter = new RVAdapter(items, getApplicationContext());
+        rv.setAdapter(adapter);
     }
 }
