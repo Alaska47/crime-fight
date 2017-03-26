@@ -27,6 +27,7 @@ import com.crimefighter.crimefighter.utils.QuickstartPreferences;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import java.util.Random;
 import java.util.TimerTask;
 
 public class IntroActivity extends AppCompatActivity {
@@ -39,7 +40,7 @@ public class IntroActivity extends AppCompatActivity {
     private BroadcastReceiver mRegistrationBroadcastReceiver;
     private boolean isReceiverRegistered;
 
-    final String userID = "18109";
+    final String userID = Integer.toString(1000 + (new Random()).nextInt(2000 - 1000 + 1));
 
     public void advance() {
         Intent intent = new Intent(this,LoginActivity.class);
@@ -51,7 +52,10 @@ public class IntroActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
 
-        storeData("UserID", userID);
+        if(getData("firstRun").equals("")) {
+            storeData("UserID", userID);
+            storeData("firstRun", "done");
+        }
 
         LinearLayout rlayout = (LinearLayout) findViewById(R.id.activity_intro);
         rlayout.setOnClickListener(new View.OnClickListener() {

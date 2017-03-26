@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
 
@@ -37,7 +38,11 @@ public class LoginActivity extends AppCompatActivity {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                advance();
+                if(!(mSubTextTextView.getText().toString().isEmpty() || mTitleTextView.getText().toString().isEmpty())) {
+                    advance();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Incorrect login!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
