@@ -35,4 +35,3 @@ dependencies {
     compile 'io.nlopez.smartlocation:library:3.2.0'
     testCompile 'junit:junit:4.12'
 }
-

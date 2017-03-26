@@ -57,15 +57,17 @@
 
     <Button
         android:id="@+id/here"
-        android:layout_width="160sp"
-        android:layout_height="50sp"
+        android:layout_width="220sp"
+        android:layout_height="60sp"
+        android:layout_marginTop="30sp"
         android:theme="@style/AppTheme.Button"
         android:text="Still Here"
         android:layout_gravity="center"/>
     <Button
         android:id="@+id/gone"
-        android:layout_width="160sp"
-        android:layout_height="50sp"
+        android:layout_width="220sp"
+        android:layout_height="60sp"
+        android:layout_marginTop="30sp"
         android:theme="@style/AppTheme.Button"
         android:text="Gone"
         android:layout_gravity="center"/>
