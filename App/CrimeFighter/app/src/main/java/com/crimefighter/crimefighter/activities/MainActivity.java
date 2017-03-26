@@ -189,11 +189,11 @@ public class MainActivity extends AppCompatActivity {
         String[] values = input.split(" ");
         int num = Integer.parseInt(values[0]);
         for(int i=0; i<num; i++) {
-            //num, name, distance, description
+            //num, name, distance, description, lat, long
             Location ad = userLoc;
-            ad.setLatitude(0.0);
-            ad.setLongitude(0.0);
-            items.add(new Item((i+1), values[i*4+1], Double.parseDouble(values[i*4+3]), values[i*4+2],ad));
+            ad.setLatitude(Double.parseDouble(values[i*6+4]));
+            ad.setLongitude(Double.parseDouble(values[i*6+5]));
+            items.add(new Item((i+1), values[i*6+1], Double.parseDouble(values[i*6+3]), values[i*6+2],ad));
         }
     }
 
