@@ -33,9 +33,6 @@ import com.crimefighter.crimefighter.services.RegistrationIntentService;
 import com.crimefighter.crimefighter.utils.Item;
 import com.crimefighter.crimefighter.utils.QuickstartPreferences;
 import com.crimefighter.crimefighter.utils.RVAdapter;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
