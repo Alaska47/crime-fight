@@ -7,12 +7,15 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.crimefighter.crimefighter.R;
@@ -30,6 +33,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.SphericalUtil;
 
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.concurrent.ExecutionException;
+
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
@@ -44,6 +56,15 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     private EditText mItemName;
     private EditText mTime;
     private EditText mDescription;
+    private Button mReportButton;
+
+    private String sItemName;
+    private String sTime;
+    private String sDescription;
+
+
+    final String host = "71.171.96.88";
+    final int portNumber = 914;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +74,42 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         mItemName = (EditText)findViewById(R.id.name_edit_text);
         mTime = (EditText)findViewById(R.id.time_edit_text);
         mDescription = (EditText)findViewById(R.id.description_edit_text);
+        mReportButton = (Button) findViewById(R.id.report_button);
+
+        mReportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new Thread(
+                        new Runnable() {
+                            public void run() {
+                                while (userLoc == null) {
+                                    try {
+                                        Thread.sleep(100);
+                                        //Log.d("Got location", "searching");
+                                    }
+                                    catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                runOnUiThread(
+                                        new Runnable() {
+                                            public void run() {
+                                                sItemName = mItemName.getText().toString();
+                                                sTime = mTime.getText().toString();
+                                                sDescription = mDescription.getText().toString();
+                                            }
+                                        });
+                                try {
+                                    new StolenItemSender().execute().get();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
+            }
+        });
 
         if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -209,5 +266,40 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     public void onStop() {
         super.onStop();
     }
+
+    class StolenItemSender extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+        @Override
+        protected String doInBackground (Void...params){
+            Socket socket = null;
+            ObjectOutputStream oos = null;
+            String message = "";
+            try {
+                socket = new Socket(host, portNumber);
+                oos = new ObjectOutputStream(socket.getOutputStream());
+                String commandStr = "5," + getData("UserID") + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude()) + "," + sItemName + "," + sTime + "," + sDescription;
+                Log.d("commandStr", commandStr);
+                oos.writeObject(commandStr);
+                oos.close();
+                socket.close();
+            } catch (UnknownHostException e) {
+                return "erroruhe";
+            } catch (SocketTimeoutException e) {
+                return "errorste";
+            } catch (Exception e) {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                return sw.toString();
+            }
+            return "";
+        }
+    }
+
+
 
 }
