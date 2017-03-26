@@ -87,6 +87,8 @@ class ConnectionHandler implements Runnable {
 
    public void run() {
    
+   	  System.out.println("ConnectionHandler " + myID + " DOES in fact exist");
+   	  
       ObjectInputStream ois = null;
       ObjectOutputStream oos = null;
    
