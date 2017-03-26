@@ -38,6 +38,7 @@ public class MyGcmListenerService extends GcmListenerService {
         PowerManager.WakeLock screenOn = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "example");
         screenOn.acquire(3000);
         String message = data.getString("message");
+        Log.d("NotificationShits", message);
 
         //format message to your liking
         /*
@@ -65,12 +66,17 @@ public class MyGcmListenerService extends GcmListenerService {
 
         try {
             String[] cse = message.split(",");
-            if(cse[0].equalsIgnoreCase("recovery"))
+            if(cse[0].equalsIgnoreCase("recovery")) {
                 sendNotificationRecovery(cse);
-            else if(cse[0].equalsIgnoreCase("stolen"))
+                Log.d("NotificationShits", "recovery");
+            }
+            else if(cse[0].equalsIgnoreCase("stolen")) {
                 sendNotificationStolen(cse);
-            else
-                sendNotificationStolen(cse);
+                Log.d("NotificationShits", "stolen");
+            } else
+            {
+
+            }
         }
         catch(Exception e) {}
         // [END_EXCLUDE]
@@ -92,21 +98,24 @@ public class MyGcmListenerService extends GcmListenerService {
         intent.putExtra("location", new String[] {message[5],message[6]});
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
-
+        Log.d("NotificationShits", "finished extras");
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Stolen Item Alert")
                 .setContentText(
                         message[1]+" was stolen approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
-                .setAutoCancel(true)
+                .setAutoCancel(false)
                 .setSound(defaultSoundUri)
-                .setSmallIcon(R.drawable.ic_action_name) //update icon
+                .setSmallIcon(R.drawable.mini_logo) //update icon
                 .setContentIntent(pendingIntent);
+
+        Log.d("NotificationShits", "built notification");
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        Log.d("NotificationShits", "notified");
     }
 
     private void sendNotificationRecovery(String[] message) {
@@ -119,9 +128,9 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Your Item Missing")
                 .setContentText("Your "+message[1]+" dissappeared approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
-                .setAutoCancel(true)
+                .setAutoCancel(false)
                 .setSound(defaultSoundUri)
-                .setSmallIcon(R.drawable.ic_action_name) //update icon
+                .setSmallIcon(R.drawable.mini_logo) //update icon
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
