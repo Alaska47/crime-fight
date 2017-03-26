@@ -56,67 +56,14 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stolen);
 
-        String name;
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if(extras == null) {
-                name = null;
-            } else {
-                name = extras.getString("name");
-            }
-        } else {
-            name = (String) savedInstanceState.getSerializable("name");
-        }
-
-        String description;
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if(extras == null) {
-                description = null;
-            } else {
-                description = extras.getString("description");
-            }
-        } else {
-            description = (String) savedInstanceState.getSerializable("description");
-        }
-
-        String distance;
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if(extras == null) {
-                distance = null;
-            } else {
-                distance = extras.getString("distance");
-            }
-        } else {
-            distance = (String) savedInstanceState.getSerializable("distance");
-        }
-
-        String[] realLocation;
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if(extras == null) {
-                realLocation = null;
-            } else {
-                realLocation = extras.getStringArray("location");
-            }
-        } else {
-            realLocation = (String[]) savedInstanceState.getSerializable("location");
-        }
-
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mNameTextView = (TextView)findViewById(R.id.name);
         mNameTextView.setTypeface(mTypeface);
-        mNameTextView.setText(name + " Stolen");
         mDistanceTextView = (TextView)findViewById(R.id.distance);
         mDistanceTextView.setTypeface(mTypeface);
-        if(distance.contains("Near")) {
-            mDistanceTextView.setText("Near you");
-        }
-        mDistanceTextView.setText(distance + " miles away");
         mDescriptionTextView = (TextView)findViewById(R.id.description);
         mDescriptionTextView.setTypeface(mTypeface);
-        mDescriptionTextView.setText(description);
+
         mButton = (Button)findViewById(R.id.button);
         mButton.setTypeface(mTypeface);
 
