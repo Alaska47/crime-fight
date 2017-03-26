@@ -34,7 +34,8 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:layout_weight="4"
         android:textColor="@color/white"
-        android:text="Description! Your object, a blue apple that was memeing under Nikhil's bed, has been recently found awoke under a spooked mammal. Please claim this memelord if you wish to suck ur mother's memes as this is critical to our functionality in a greater suburban area."/>
+        android:text="Your item has been found! Another user has reported that the item has been found in another location displayed on the map."
+        android:gravity="center"/>
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/map"
