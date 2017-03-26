@@ -6,10 +6,20 @@
     android:id="@+id/activity_intro"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/white"
     android:orientation="vertical"
     tools:context="com.crimefighter.crimefighter.activities.AnalyticsActivity">
+
+    <Button
+        android:id="@+id/report_button"
+        android:layout_width="match_parent"
+        android:layout_height="60sp"
+        android:background="@color/black"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:textSize="17sp"
+        android:clickable="false"
+        android:text="Analytics"/>
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/map"
