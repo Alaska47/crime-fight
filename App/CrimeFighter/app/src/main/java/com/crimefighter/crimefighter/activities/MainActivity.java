@@ -79,9 +79,9 @@ public class MainActivity extends AppCompatActivity {
     private void initializeData(){
         items = new ArrayList<>();
         Random rand = new Random();
-        items.add(new Item(rand.nextInt(80 - 65) + 65, "Chocolates", 0.001, "random shit"));
-        items.add(new Item(rand.nextInt(80 - 65) + 65, "Backpack", 0.5, "random shit"));
-        items.add(new Item(rand.nextInt(80 - 65) + 65, "Bicycle", 0.75, "random shit"));
+        items.add(new Item(1, "Chocolates", 0.001, "random shit"));
+        items.add(new Item(2, "Backpack", 0.5, "random shit"));
+        items.add(new Item(3, "Bicycle", 0.75, "random shit"));
     }
 
     private void initializeAdapter(){

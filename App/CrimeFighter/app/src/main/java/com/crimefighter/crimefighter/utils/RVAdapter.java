@@ -1,6 +1,7 @@
 package com.crimefighter.crimefighter.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.v7.widget.CardView;
@@ -12,7 +13,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
+import com.crimefighter.crimefighter.activities.FoundActivity;
 import com.crimefighter.crimefighter.activities.MainActivity;
+import com.crimefighter.crimefighter.activities.ReportActivity;
+import com.crimefighter.crimefighter.activities.StolenActivity;
+import com.crimefighter.crimefighter.activities.WitnessActivity;
 
 import java.util.List;
 
@@ -64,7 +69,20 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         personViewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, Integer.toString(persons.get(jj).id), Toast.LENGTH_SHORT).show();
+                switch(persons.get(jj).id) {
+                    case 1:
+                        Intent intent = new Intent(context, FoundActivity.class);
+                        context.startActivity(intent);
+                        break;
+                    case 2:
+                        Intent intent1 = new Intent(context, StolenActivity.class);
+                        context.startActivity(intent1);
+                        break;
+                    case 3:
+                        Intent intent2 = new Intent(context, WitnessActivity.class);
+                        context.startActivity(intent2);
+                        break;
+                }
             }
         });
     }

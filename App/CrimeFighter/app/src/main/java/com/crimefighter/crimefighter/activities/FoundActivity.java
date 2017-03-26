@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -14,7 +13,6 @@ import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
 import com.crimefighter.crimefighter.R;
 import com.google.android.gms.maps.CameraUpdate;
@@ -33,12 +31,7 @@ import com.google.maps.android.SphericalUtil;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class StolenActivity extends AppCompatActivity  implements OnMapReadyCallback {
-
-    public static Typeface mTypeface;
-    private TextView mNameTextView;
-    private TextView mDistanceTextView;
-    private TextView mDescriptionTextView;
+public class FoundActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int PERMISSIONS_MAP = 1337;
     private static Location userLoc;
@@ -48,16 +41,8 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
-        mNameTextView = (TextView)findViewById(R.id.stolen_name);
-        mNameTextView.setTypeface(mTypeface);
-        mDistanceTextView = (TextView)findViewById(R.id.stolen_distance);
-        mDistanceTextView.setTypeface(mTypeface);
-        mDescriptionTextView = (TextView)findViewById(R.id.stolen_description);
-        mDescriptionTextView.setTypeface(mTypeface);
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stolen);
+        setContentView(R.layout.activity_found);
 
         if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},

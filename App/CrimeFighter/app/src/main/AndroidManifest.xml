@@ -41,7 +41,7 @@
         </activity>
         <activity android:name=".activities.MainActivity">
         </activity>
-        <activity android:name=".FoundActivity">
+        <activity android:name=".activities.FoundActivity">
         </activity>
         <activity android:name=".activities.WitnessActivity">
         </activity>
