@@ -190,8 +190,9 @@ class ConnectionHandler implements Runnable {
                int c = 0;
                for(Document d : CrimeFighterServer.watchItems.find()) {
                	   c ++;
-               	   responseMessage += d.get("itemName") + ",";
+               	   responseMessage += d.get("itemName") + "," + d.get("itemDesc") + ",";
                	   responseMessage += "" + distance(lat, lon, (Double) d.get("lat"), (Double) d.get("long")) + ",";
+               	   responseMessage += d.get("itemID") + ",";
                }
                responseMessage = "" + c + responseMessage.substring(0, responseMessage.length() - 1);
                System.out.println("Responding to userID " + userID + " with responseMsg: ");
