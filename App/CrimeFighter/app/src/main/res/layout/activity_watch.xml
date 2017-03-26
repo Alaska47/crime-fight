@@ -82,7 +82,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:imeOptions="actionDone"
-            android:hint="Description of Object and Thief" />
+            android:hint="Description of Object" />
 
     </android.support.design.widget.TextInputLayout>
 
