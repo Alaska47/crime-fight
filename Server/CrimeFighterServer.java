@@ -11,10 +11,13 @@ import java.lang.Math;
 import java.io.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.Date;
 
 public class CrimeFighterServer
 {
    public static final int PORT_NUMBER = 914;
+
+   public static int lastItemID = 111;
 
    public static MongoCollection<Document> userInfo;
    public static MongoCollection<Document> watchItems;
@@ -122,18 +125,33 @@ class ConnectionHandler implements Runnable {
          double lat;
          double lon;
          int userID;
-         Document locationUpdate;
+         Document docUpdate;
+         Document queryDoc;
+         String itemName,itemDesc;
          switch(requestType) {
+         	case 0:
+               userID = Integer.parseInt(params[1]);
+               String authKey = params[2];
+               queryDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first();
+               docUpdate = new Document("userID", userID).append("curLat", -1.0).append("curLong",-1.0).append("authKey",authKey);
+               if(queryDoc == null) {
+               	   CrimeFighterServer.userInfo.insertOne(docUpdate);
+               } else {
+               	   CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), docUpdate);
+               }
+               break;
             case 1:
 
                userID = Integer.parseInt(params[1]);
                lat = Double.parseDouble(params[2]);
                lon = Double.parseDouble(params[3]);
-               locationUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon);
-               if(CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first() == null) {
-               	   CrimeFighterServer.userInfo.insertOne(locationUpdate);
+               queryDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first();
+               if(queryDoc == null) {
+               	   docUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon).append("authKey","000000000000");
+               	   CrimeFighterServer.userInfo.insertOne(docUpdate);
                } else {
-                   CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), locationUpdate);
+               	   docUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon).append("authKey",queryDoc.get("authKey"));
+                   CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), docUpdate);
                }
 
                /*oos.writeObject(10);
@@ -159,12 +177,15 @@ class ConnectionHandler implements Runnable {
                userID = Integer.parseInt(params[1]);
                lat = Double.parseDouble(params[2]);
                lon = Double.parseDouble(params[3]);
-               locationUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon);
-               if(CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first() == null) {
-               	   CrimeFighterServer.userInfo.insertOne(locationUpdate);
+               queryDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first();
+               if(queryDoc == null) {
+               	   docUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon).append("authKey","000000000000");
+               	   CrimeFighterServer.userInfo.insertOne(docUpdate);
                } else {
-                   CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), locationUpdate);
+               	   docUpdate = new Document("userID",userID).append("curLat", lat).append("curLong", lon).append("authKey",queryDoc.get("authKey"));
+                   CrimeFighterServer.userInfo.findOneAndReplace(Filters.eq("userID", userID), docUpdate);
                }
+
                String responseMessage = "";
                int c = 0;
                for(Document d : CrimeFighterServer.watchItems.find()) {
@@ -193,12 +214,22 @@ class ConnectionHandler implements Runnable {
                break;
          
 
+            case 3:
+
+
+               userID = Integer.parseInt(params[1]);
+               itemName = params[2];
+               itemDesc = params[3];
+               lat = Double.parseDouble(params[4]);
+               lon = Double.parseDouble(params[5]);
+
+               docUpdate = new Document("ownerID",userID).append("itemID", CrimeFighterServer.lastItemID++).append("curLat",lat).append("curLong", lon).append("lastTime", new Date().getTime());
+               CrimeFighterServer.watchItems.insertOne(docUpdate);
+
+               break;
+
 
 /*
-
-
-
-
             case 3:
                int beaconID = Integer.parseInt(params[1]);
                Beacon target = myParent.getBeaconById(beaconID);

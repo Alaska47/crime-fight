@@ -16,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.crimefighter.crimefighter.R;
 import com.crimefighter.crimefighter.activities.MainActivity;
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -24,7 +25,7 @@ public class MyGcmListenerService extends GcmListenerService {
     private static final String TAG = "MyGcmListenerService";
 
     /**
-     * Called when message is received.
+     * Callandroid.R.attred when message is received.
      *
      * @param from SenderID of the sender.
      * @param data Data bundle containing message data as key/value pairs.
@@ -82,6 +83,7 @@ public class MyGcmListenerService extends GcmListenerService {
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =

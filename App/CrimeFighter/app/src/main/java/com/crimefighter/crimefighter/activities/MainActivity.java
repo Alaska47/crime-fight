@@ -69,17 +69,16 @@ public class MainActivity extends AppCompatActivity {
     final String host = "71.171.96.88";
     final int portNumber = 914;
 
-    final String userID = "18109";
 
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-    private boolean isReceiverRegistered;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        storeData("UserID", userID);
+
 
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mTitleTextView = (TextView)findViewById(R.id.main_title);
@@ -143,58 +142,8 @@ public class MainActivity extends AppCompatActivity {
 
         initializeData();
         initializeAdapter();
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
-                boolean sentToken = sharedPreferences
-                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
-            }
-        };
-        registerReceiver();
 
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        }
 
-    }
-
-    @Override
-    protected void onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
-        isReceiverRegistered = false;
-        super.onPause();
-    }
-
-    private void registerReceiver(){
-        if(!isReceiverRegistered) {
-            LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
-                    new IntentFilter(QuickstartPreferences.REGISTRATION_COMPLETE));
-            isReceiverRegistered = true;
-        }
-    }
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, 9000)
-                        .show();
-            } else {
-                Log.i("gu", "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
     }
 
     private void getUserLocation() {
@@ -277,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 socket = new Socket(host, portNumber);
                 oos = new ObjectOutputStream(socket.getOutputStream());
-                String commandStr = "2," + userID + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude());
+                String commandStr = "2," + getData("UserID") + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude());
                 Log.d("commandStr", commandStr);
                 oos.writeObject(commandStr);
                 ois = new ObjectInputStream(socket.getInputStream());
