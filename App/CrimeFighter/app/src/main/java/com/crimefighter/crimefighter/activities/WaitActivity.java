@@ -108,7 +108,7 @@ public class WaitActivity extends AppCompatActivity {
         if(distance.contains("Near")) {
             mDistanceTextView.setText("Near you");
         }
-        mDistanceTextView.setText(distance + " miles away");
+        mDistanceTextView.setText(distance.split(" ")[0] + " miles away");
         mDescriptionTextView = (TextView)findViewById(R.id.description);
         mDescriptionTextView.setTypeface(mTypeface);
         mDescriptionTextView.setText(description);

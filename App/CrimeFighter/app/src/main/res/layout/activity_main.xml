@@ -108,11 +108,27 @@
         android:layout_margin="16dp"
         android:id="@+id/fabio"
         android:background="@drawable/ripple"
-        app:backgroundTint="@color/colorPrimary"
+        android:src="@drawable/ic_remove_red_eye_white_18dp"
+        app:backgroundTint="@color/red"
         app:borderWidth="0dp"
         app:elevation="6dp"
         app:pressedTranslationZ="12dp"
         app:fabSize="normal"
         app:layout_anchor="@id/activity_intro"
         app:layout_anchorGravity="bottom|right|end" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:id="@+id/fabio1"
+        android:background="@drawable/ripple"
+        app:backgroundTint="@color/colorPrimary"
+        app:borderWidth="0dp"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        app:fabSize="normal"
+        app:layout_anchor="@id/activity_intro"
+        app:layout_anchorGravity="bottom|left|end" />
 </android.support.design.widget.CoordinatorLayout>

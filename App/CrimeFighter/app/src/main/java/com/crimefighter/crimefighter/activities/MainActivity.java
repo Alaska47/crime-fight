@@ -1,5 +1,6 @@
 package com.crimefighter.crimefighter.activities;
 
+import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -7,17 +8,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntegerRes;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,6 +42,10 @@ import com.crimefighter.crimefighter.utils.QuickstartPreferences;
 import com.crimefighter.crimefighter.utils.RVAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -63,7 +74,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView mSolvTextView;
     private Button mButton;
     private FloatingActionButton fab;
-    private List<Item> items;
+    private FloatingActionButton fab1;
+    private List<Item> items = new ArrayList<Item>();
     private RecyclerView rv;
     private static Location userLoc;
 
@@ -74,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        checkPermission();
 
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mTitleTextView = (TextView)findViewById(R.id.main_title);
@@ -90,29 +104,20 @@ public class MainActivity extends AppCompatActivity {
         fab = (FloatingActionButton) findViewById(R.id.fabio);
         fab.setImageBitmap(textAsBitmap("!", 40, Color.WHITE));
 
-//        boolean testAd = true;
-//
-//        if(testAd) {
-//            MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713"); //ca-app-pub-3940256099942544~3347511713 DEMO
-//            AdView mAdView = (AdView) findViewById(R.id.adView);
-//            AdRequest request = new AdRequest.Builder()
-//                    .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)        // All emulators
-//                    .addTestDevice("AC98C820A50B4AD8A2106EDE96FB87D4")  // An example device ID
-//                    .build();
-//            mAdView.loadAd(request);
-//        }
-//        else {
-//            MobileAds.initialize(getApplicationContext(), "ca-app-pub-3670882123396960~3295541137"); //ca-app-pub-3940256099942544~3347511713 DEMO
-//            AdView mAdView = (AdView) findViewById(R.id.adView);
-//            AdRequest request = new AdRequest.Builder()
-//                    .build();
-//            mAdView.loadAd(request);
-//        }
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),ReportActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        fab1 = (FloatingActionButton) findViewById(R.id.fabio);
+
+        fab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), WatchActivity.class);
                 startActivity(intent);
             }
         });
@@ -140,9 +145,16 @@ public class MainActivity extends AppCompatActivity {
                         } catch (ExecutionException e) {
                             e.printStackTrace();
                         }
-                        Log.d("RecentItems", mess);
-                        initializeData(mess);
-                        initializeAdapter();
+                        final String gg = mess;
+                        runOnUiThread(
+                                new Runnable() {
+                                    public void run() {
+                                    Log.d("RecentItems", gg);
+                                    initializeData(gg);
+                                    initializeAdapter();
+                                    }
+                                });
+
                     }
                 }).start();
 
@@ -159,6 +171,17 @@ public class MainActivity extends AppCompatActivity {
         //
 
 
+    }
+
+    public void checkPermission(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                ){//Can add more as per requirement
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
+                    123);
+        }
     }
 
     private void getUserLocation() {
@@ -199,14 +222,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeData(String input) {
-        String[] values = input.split(" ");
-        int num = Integer.parseInt(values[0]);
-        for(int i=0; i<num; i++) {
-            //num, name, distance, description, lat, long
-            Location ad = userLoc;
-            ad.setLatitude(Double.parseDouble(values[i*6+4]));
-            ad.setLongitude(Double.parseDouble(values[i*6+5]));
-            items.add(new Item((i+1), values[i*6+1], Double.parseDouble(values[i*6+3]), values[i*6+2],ad));
+        if(input.equals("")) {
+            items.add(new Item(1, "Chocolate", 0.05, "i am a gay homo", userLoc));
+        } else {
+            String[] values = input.split(" ");
+            int num = Integer.parseInt(values[0]);
+            for (int i = 0; i < num; i++) {
+                //num, name, distance, description, lat, long
+                Location ad = userLoc;
+                ad.setLatitude(Double.parseDouble(values[i * 6 + 4]));
+                ad.setLongitude(Double.parseDouble(values[i * 6 + 5]));
+                items.add(new Item((i + 1), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
+            }
         }
     }
 
@@ -255,16 +282,13 @@ public class MainActivity extends AppCompatActivity {
                 oos.close();
                 socket.close();
             } catch (ClassNotFoundException e) {
-                return "errorcla";
+                return "";
             } catch (UnknownHostException e) {
-                return "erroruhe";
+                return "";
             } catch (SocketTimeoutException e) {
-                return "errorste";
+                return "";
             } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                return sw.toString();
+                return "";
             }
             return message;
         }
@@ -285,5 +309,26 @@ public class MainActivity extends AppCompatActivity {
         return getSharedPreferences("XPLORE_PREFS", Context.MODE_PRIVATE).getString(key, "");
     }
 
+    public boolean selfPermissionGranted(String permission) {
+        // For Android < Android M, self permissions are always granted.
+        boolean result = true;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // targetSdkVersion >= Android M, we can
+                // use Context#checkSelfPermission
+                result = checkSelfPermission(permission)
+                        == PackageManager.PERMISSION_GRANTED;
+            }
+            else {
+                // targetSdkVersion < Android M, we have to use PermissionChecker
+                result = PermissionChecker.checkSelfPermission(this, permission)
+                        == PermissionChecker.PERMISSION_GRANTED;
+            }
+        }
+
+        return result;
+    }
 
 }
