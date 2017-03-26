@@ -16,7 +16,7 @@
 
 
     <TextView
-        android:id="@+id/found_title"
+        android:id="@+id/report_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -25,37 +25,56 @@
         android:textSize="35sp"
         android:gravity="center"/>
 
-        <android.support.design.widget.TextInputLayout
-            android:layout_margin="5dp"
-            android:id="@+id/username_input_layout"
+    <android.support.design.widget.TextInputLayout
+        android:layout_margin="1dp"
+        android:id="@+id/time_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
+
+        <EditText
+            android:id="@+id/time_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
+            android:inputType="text"
+            android:imeOptions="actionNext"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:hint="Item name" />
 
-            <EditText
-                android:id="@+id/username_edit_text"
-                android:layout_width="match_parent"
-                android:inputType="text"
-                android:imeOptions="actionNext"
-                android:layout_height="wrap_content"
-                android:textColor="@color/white"
-                android:hint="Time" />
+    </android.support.design.widget.TextInputLayout>
 
-        </android.support.design.widget.TextInputLayout>
+    <android.support.design.widget.TextInputLayout
+        android:layout_margin="1dp"
+        android:id="@+id/username_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
 
-        <com.google.android.gms.maps.MapView
-            android:id="@+id/map"
+        <EditText
+            android:id="@+id/username_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"/>
+            android:inputType="text"
+            android:imeOptions="actionNext"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:hint="Time" />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <com.google.android.gms.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"/>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/thief_description"
         android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="2"
         app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
 
         <EditText
@@ -75,12 +94,12 @@
         android:layout_gravity="center">
 
         <Button
-            android:id="@+id/login_button"
+            android:id="@+id/report_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:theme="@style/AppTheme.Button"
             android:layout_alignParentBottom="true"
-            android:text="Witness"/>
+            android:text="Report"/>
 
     </RelativeLayout>
 
