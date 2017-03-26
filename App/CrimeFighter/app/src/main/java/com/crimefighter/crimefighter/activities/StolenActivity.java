@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -13,6 +14,7 @@ import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.crimefighter.crimefighter.R;
 import com.google.android.gms.maps.CameraUpdate;
@@ -22,7 +24,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -32,7 +33,12 @@ import com.google.maps.android.SphericalUtil;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class ReportActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class StolenActivity extends AppCompatActivity  implements OnMapReadyCallback {
+
+    public static Typeface mTypeface;
+    private TextView mNameTextView;
+    private TextView mDistanceTextView;
+    private TextView mDescriptionTextView;
 
     private static final int PERMISSIONS_MAP = 1337;
     private static Location userLoc;
@@ -43,7 +49,17 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_report);
+        setContentView(R.layout.activity_stolen);
+
+        mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
+        mNameTextView = (TextView)findViewById(R.id.stolen_name);
+        mNameTextView.setTypeface(mTypeface);
+        mDistanceTextView = (TextView)findViewById(R.id.stolen_distance);
+        mDistanceTextView.setTypeface(mTypeface);
+        mDescriptionTextView = (TextView)findViewById(R.id.stolen_description);
+        mDescriptionTextView.setTypeface(mTypeface);
+
+
 
         if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -58,7 +74,6 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.onCreate(mBundle);
         mMapView.getMapAsync(this);
-
     }
 
     @Override
@@ -156,7 +171,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         return getSharedPreferences("XPLORE_PREFS", Context.MODE_PRIVATE).getString(key, "");
     }
 
-    public Bitmap bitmapSizeByScale( Bitmap bitmapIn, float scall_zero_to_one_f) {
+    public Bitmap bitmapSizeByScale(Bitmap bitmapIn, float scall_zero_to_one_f) {
 
         Bitmap bitmapOut = Bitmap.createScaledBitmap(bitmapIn,
                 Math.round(bitmapIn.getWidth() * scall_zero_to_one_f),
@@ -200,5 +215,4 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     public void onStop() {
         super.onStop();
     }
-
 }

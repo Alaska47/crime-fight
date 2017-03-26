@@ -22,7 +22,6 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -32,7 +31,7 @@ import com.google.maps.android.SphericalUtil;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class ReportActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class FoundActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final int PERMISSIONS_MAP = 1337;
     private static Location userLoc;
@@ -43,7 +42,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_report);
+        setContentView(R.layout.activity_found);
 
         if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -58,7 +57,6 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.onCreate(mBundle);
         mMapView.getMapAsync(this);
-
     }
 
     @Override
@@ -156,7 +154,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         return getSharedPreferences("XPLORE_PREFS", Context.MODE_PRIVATE).getString(key, "");
     }
 
-    public Bitmap bitmapSizeByScale( Bitmap bitmapIn, float scall_zero_to_one_f) {
+    public Bitmap bitmapSizeByScale(Bitmap bitmapIn, float scall_zero_to_one_f) {
 
         Bitmap bitmapOut = Bitmap.createScaledBitmap(bitmapIn,
                 Math.round(bitmapIn.getWidth() * scall_zero_to_one_f),
@@ -200,5 +198,4 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
     public void onStop() {
         super.onStop();
     }
-
 }

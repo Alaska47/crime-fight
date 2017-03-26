@@ -41,14 +41,17 @@
         android:orientation="vertical">
 
         <android.support.design.widget.TextInputLayout
+            android:layout_margin="5dp"
             android:id="@+id/username_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:hintTextAppearance="@android:style/TextAppearance.Medium">
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
 
             <EditText
                 android:id="@+id/username_edit_text"
                 android:layout_width="match_parent"
+                android:inputType="text"
+                android:imeOptions="actionNext"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:hint="Username" />
@@ -57,15 +60,18 @@
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/password_input_layout"
+            android:layout_margin="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:hintTextAppearance="@android:style/TextAppearance.Medium">
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout" >
 
             <EditText
                 android:id="@+id/password_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
                 android:hint="Password" />
 
         </android.support.design.widget.TextInputLayout>
