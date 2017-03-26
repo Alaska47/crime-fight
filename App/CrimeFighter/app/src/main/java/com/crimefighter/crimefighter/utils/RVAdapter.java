@@ -17,6 +17,7 @@ import com.crimefighter.crimefighter.activities.FoundActivity;
 import com.crimefighter.crimefighter.activities.MainActivity;
 import com.crimefighter.crimefighter.activities.ReportActivity;
 import com.crimefighter.crimefighter.activities.StolenActivity;
+import com.crimefighter.crimefighter.activities.WaitActivity;
 import com.crimefighter.crimefighter.activities.WitnessActivity;
 
 import java.util.List;
@@ -69,20 +70,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         personViewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch(persons.get(jj).id) {
-                    case 1:
-                        Intent intent = new Intent(context, FoundActivity.class);
-                        context.startActivity(intent);
-                        break;
-                    case 2:
-                        Intent intent1 = new Intent(context, StolenActivity.class);
-                        context.startActivity(intent1);
-                        break;
-                    case 3:
-                        Intent intent2 = new Intent(context, WitnessActivity.class);
-                        context.startActivity(intent2);
-                        break;
-                }
+            Intent intent = new Intent(context, WaitActivity.class);
+            intent.putExtra("id", Integer.toString(persons.get(jj).id));
+            intent.putExtra("name", (persons.get(jj).itemName));
+            intent.putExtra("distance", (persons.get(jj).distance));
+            intent.putExtra("description", (persons.get(jj).description));
+            intent.putExtra("location", new String[] {Double.toString(persons.get(jj).dd.getLatitude()), Double.toString(persons.get(jj).dd.getLongitude())});
+            context.startActivity(intent);
             }
         });
     }

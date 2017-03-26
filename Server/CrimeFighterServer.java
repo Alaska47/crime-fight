@@ -129,7 +129,7 @@ class ConnectionHandler implements Runnable {
          Document queryDoc;
          String itemName,itemDesc;
          switch(requestType) {
-         	case 0:
+         	case 0:	
                userID = Integer.parseInt(params[1]);
                String authKey = params[2];
                queryDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID", userID)).first();
@@ -190,8 +190,9 @@ class ConnectionHandler implements Runnable {
                int c = 0;
                for(Document d : CrimeFighterServer.watchItems.find()) {
                	   c ++;
-               	   responseMessage += d.get("itemName") + ",";
+               	   responseMessage += d.get("itemName") + "," + d.get("itemDesc") + ",";
                	   responseMessage += "" + distance(lat, lon, (Double) d.get("lat"), (Double) d.get("long")) + ",";
+               	   responseMessage += d.get("itemID") + ",";
                }
                responseMessage = "" + c + responseMessage.substring(0, responseMessage.length() - 1);
                System.out.println("Responding to userID " + userID + " with responseMsg: ");
@@ -223,7 +224,8 @@ class ConnectionHandler implements Runnable {
                lat = Double.parseDouble(params[4]);
                lon = Double.parseDouble(params[5]);
 
-               docUpdate = new Document("ownerID",userID).append("itemID", CrimeFighterServer.lastItemID++).append("curLat",lat).append("curLong", lon).append("lastTime", new Date().getTime());
+               docUpdate = new Document("ownerID",userID).append("itemID", CrimeFighterServer.lastItemID++).append("itemName",itemName).append("itemDesc",itemDesc)
+                                               .append("curLat",lat).append("curLong", lon).append("lastTime", new Date().getTime());
                CrimeFighterServer.watchItems.insertOne(docUpdate);
 
                break;

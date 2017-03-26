@@ -21,7 +21,7 @@ public class ConnectionTester {
 		ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 
 		//PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-		String query = "1,1932821,38.8190095,-77.168154\n";
+		String query = "3,42069,MLH Alienware Laptop,Left at Hardware booth,38.8189742,-77.1681981\n";
 		System.out.println("Sending <" + query + ">");
 		oos.writeObject(query);
 		//out.println("gay faf");
