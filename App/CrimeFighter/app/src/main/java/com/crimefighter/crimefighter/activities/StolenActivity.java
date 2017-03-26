@@ -150,7 +150,7 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
         else {
             Log.d("Dash", "bad");
         }
-        mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.getUiSettings().setScrollGesturesEnabled(true);
 
     }
 

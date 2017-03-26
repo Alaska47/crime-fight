@@ -209,7 +209,7 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
         else {
             Log.d("Dash", "bad");
         }
-        mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.getUiSettings().setScrollGesturesEnabled(true);
 
     }
 

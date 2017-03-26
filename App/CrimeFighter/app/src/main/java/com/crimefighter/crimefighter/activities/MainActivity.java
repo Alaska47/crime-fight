@@ -135,7 +135,8 @@ public class MainActivity extends AppCompatActivity {
         fab2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "gu", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), AnalyticsActivity.class);
+                startActivity(intent);
             }
         });
 

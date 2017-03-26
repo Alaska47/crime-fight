@@ -210,7 +210,7 @@ public class ReportActivity extends AppCompatActivity implements OnMapReadyCallb
         else {
             Log.d("Dash", "bad");
         }
-        mMap.getUiSettings().setScrollGesturesEnabled(false);
+        mMap.getUiSettings().setScrollGesturesEnabled(true);
 
     }
 
