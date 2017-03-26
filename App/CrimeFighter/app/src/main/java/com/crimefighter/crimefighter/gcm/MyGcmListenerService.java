@@ -69,6 +69,8 @@ public class MyGcmListenerService extends GcmListenerService {
                 sendNotificationRecovery(cse);
             else if(cse[0].equalsIgnoreCase("stolen"))
                 sendNotificationStolen(cse);
+            else
+                sendNotificationStolen(cse);
         }
         catch(Exception e) {}
         // [END_EXCLUDE]
@@ -94,7 +96,8 @@ public class MyGcmListenerService extends GcmListenerService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Stolen Item Alert")
-                .setContentText(message[1]+" was stolen approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
+                .setContentText(
+                        message[1]+" was stolen approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setSmallIcon(R.drawable.ic_action_name) //update icon
@@ -115,7 +118,7 @@ public class MyGcmListenerService extends GcmListenerService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Your Item Missing")
-                .setContentText("Your "+message[1]+" has been reported gone and went missing approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
+                .setContentText("Your "+message[1]+" dissappeared approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setSmallIcon(R.drawable.ic_action_name) //update icon
