@@ -14,6 +14,7 @@ import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -45,6 +46,7 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
 
     private static final int PERMISSIONS_MAP = 1337;
     private static Location userLoc;
+    private static String[] realLocation;
     private MapView mMapView;
     private static GoogleMap mMap;
     private Bundle mBundle;
@@ -54,17 +56,76 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stolen);
 
+        String name;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                name = null;
+            } else {
+                name = extras.getString("name");
+            }
+        } else {
+            name = (String) savedInstanceState.getSerializable("name");
+        }
+
+        String description;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                description = null;
+            } else {
+                description = extras.getString("description");
+            }
+        } else {
+            description = (String) savedInstanceState.getSerializable("description");
+        }
+
+        String distance;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                distance = null;
+            } else {
+                distance = extras.getString("distance");
+            }
+        } else {
+            distance = (String) savedInstanceState.getSerializable("distance");
+        }
+
+        String[] realLocation;
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if(extras == null) {
+                realLocation = null;
+            } else {
+                realLocation = extras.getStringArray("location");
+            }
+        } else {
+            realLocation = (String[]) savedInstanceState.getSerializable("location");
+        }
+
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mNameTextView = (TextView)findViewById(R.id.name);
         mNameTextView.setTypeface(mTypeface);
+        mNameTextView.setText(name + " Stolen");
         mDistanceTextView = (TextView)findViewById(R.id.distance);
         mDistanceTextView.setTypeface(mTypeface);
+        if(distance.contains("Near")) {
+            mDistanceTextView.setText("Near you");
+        }
+        mDistanceTextView.setText(distance + " miles away");
         mDescriptionTextView = (TextView)findViewById(R.id.description);
         mDescriptionTextView.setTypeface(mTypeface);
+        mDescriptionTextView.setText(description);
         mButton = (Button)findViewById(R.id.button);
         mButton.setTypeface(mTypeface);
 
+        mButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
 
         if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -119,6 +180,8 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
                                     e.printStackTrace();
                                 }
                             }
+                            userLoc.setLatitude(Double.parseDouble(realLocation[0]));
+                            userLoc.setLongitude(Double.parseDouble(realLocation[1]));
                             LatLng newLatLng = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
                             LatLngBounds bounds = new LatLngBounds.Builder().
                                     include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 0)).

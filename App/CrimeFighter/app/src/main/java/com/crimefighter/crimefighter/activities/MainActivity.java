@@ -142,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
-        initializeData();
-        initializeAdapter();
+        //initializeData();
+        //initializeAdapter();
 
 
     }
@@ -195,29 +195,6 @@ public class MainActivity extends AppCompatActivity {
             ad.setLongitude(Double.parseDouble(values[i*6+5]));
             items.add(new Item((i+1), values[i*6+1], Double.parseDouble(values[i*6+3]), values[i*6+2],ad));
         }
-    }
-
-    private void initializeData(){
-        items = new ArrayList<>();
-        Random rand = new Random();
-        /*
-        MIHIR
-            create the location stuff like this
-            Location ad = userLoc;
-            ad.setLatitude(0.0);
-            ad.setLongitude(0.0);
-            and put ad right next to "random shit"
-
-            THIS SHIT SHOULD BE IN A FOR LOOP dont be retarded
-         */
-
-        Location ad = userLoc;
-        ad.setLatitude(0.0);
-        ad.setLongitude(0.0);
-        
-        items.add(new Item(1, "Chocolates", 0.001, "random shit",ad));
-        items.add(new Item(2, "Backpack", 0.5, "random shit",ad));
-        items.add(new Item(3, "Bicycle", 0.75, "random shit",ad));
     }
 
     private void initializeAdapter(){
