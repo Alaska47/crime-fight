@@ -192,10 +192,10 @@ class ConnectionHandler implements Runnable {
                	   c ++;
                	   responseMessage += d.get("itemName") + "," + d.get("itemDesc") + ",";
                	   responseMessage += "" + distance(lat, lon, (Double) d.get("curLat"), (Double) d.get("curLong")) + ",";
-               	   responesMessage += "" + d.get("curLat") + "," + d.get("curLong") + ",";
+               	   responseMessage += "" + d.get("curLat") + "," + d.get("curLong") + ",";
                	   responseMessage += d.get("itemID") + ",";
                }
-               responseMessage = "" + c + + "," + responseMessage.substring(0, responseMessage.length() - 1);
+               responseMessage = "" + c + "," + responseMessage.substring(0, responseMessage.length() - 1);
                System.out.println("Responding to userID " + userID + " with responseMsg: ");
                System.out.println(responseMessage);
             
@@ -224,15 +224,15 @@ class ConnectionHandler implements Runnable {
                	  // confirm seen, just update time
                	   long newLastSeenTime = new Date().getTime();
                	   docUpdate = new Document("ownerID",queryDoc.get("ownerID")).append("itemID",queryDoc.get("itemID")).append("itemName",queryDoc.get("itemName"))
-               	   								.append("itemDesc",queryDoc.get("itemDesc")).append("curLat",queryDoc.get("curLat").append("curLong",queryDoc.get("curLong"))
+               	   								.append("itemDesc",queryDoc.get("itemDesc")).append("curLat",queryDoc.get("curLat")).append("curLong",queryDoc.get("curLong"))
                	   								.append("lastTime", newLastSeenTime);
                } else {
                		// oh no, it's stolen 
                		int ownerID = (Integer) queryDoc.get("ownerID");
-               		Document randomDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID",ownerID));
+               		Document randomDoc = CrimeFighterServer.userInfo.find(Filters.eq("userID",ownerID)).first();
                		String stolenMessage = "Your item [" + queryDoc.get("itemName") + "] has been reported missing/stolen";
                		stolenMessage = stolenMessage.replace(" ","%20");
-               		NotificationSender.sendNotification(stolenMessage, new String[] {randomDoc.get("authKey")});
+               		NotificationSender.sendNotification(stolenMessage, new String[] {(String) randomDoc.get("authKey")});
                }
             default:
                break;
