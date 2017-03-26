@@ -48,6 +48,9 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_stolen);
+
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mNameTextView = (TextView)findViewById(R.id.stolen_name);
         mNameTextView.setTypeface(mTypeface);
@@ -56,8 +59,7 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
         mDescriptionTextView = (TextView)findViewById(R.id.stolen_description);
         mDescriptionTextView.setTypeface(mTypeface);
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_stolen);
+
 
         if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
