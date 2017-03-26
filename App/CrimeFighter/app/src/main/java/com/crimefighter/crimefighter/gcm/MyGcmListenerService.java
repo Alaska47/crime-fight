@@ -17,6 +17,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.crimefighter.crimefighter.R;
+import com.crimefighter.crimefighter.activities.FoundActivity;
 import com.crimefighter.crimefighter.activities.MainActivity;
 import com.crimefighter.crimefighter.activities.StolenActivity;
 import com.google.android.gms.gcm.GcmListenerService;
@@ -70,7 +71,7 @@ public class MyGcmListenerService extends GcmListenerService {
             else if(cse[0].equalsIgnoreCase("stolen"))
                 sendNotificationStolen(cse);
             else
-                sendNotificationStolen(cse);
+                sendNotificationFound();
         }
         catch(Exception e) {}
         // [END_EXCLUDE]
@@ -119,6 +120,27 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle("Your Item Missing")
                 .setContentText("Your "+message[1]+" dissappeared approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setSmallIcon(R.drawable.ic_action_name) //update icon
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    private void sendNotificationFound() {
+        Intent intent = new Intent(this, FoundActivity.class); //updateintent
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("Your Item Found")
+                .setContentText("Your item has been found!") //update message
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setSmallIcon(R.drawable.ic_action_name) //update icon
