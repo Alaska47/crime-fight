@@ -1,59 +1,47 @@
 package com.crimefighter.crimefighter.utils;
 
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
+import com.crimefighter.crimefighter.activities.MainActivity;
 
 import java.util.List;
 
-/**
- * Created by anees on 3/25/2017.
- */
+public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> {
 
-public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ItemViewHolder>{
-
-    List<Item> items;
-
-    public RVAdapter(List<Item> items){
-        this.items = items;
-    }
-
-    public static class ItemViewHolder extends RecyclerView.ViewHolder {
+    public static class PersonViewHolder extends RecyclerView.ViewHolder {
 
         CardView cv;
-        TextView itemName;
-        TextView itemDist;
+        TextView personName;
+        TextView personAge;
 
-        ItemViewHolder(View itemView) {
+        PersonViewHolder(View itemView) {
             super(itemView);
             cv = (CardView)itemView.findViewById(R.id.cv);
-            itemName = (TextView)itemView.findViewById(R.id.item_name);
-            itemDist = (TextView)itemView.findViewById(R.id.item_dist);
+            personName = (TextView)itemView.findViewById(R.id.item_name);
+            personName.setTypeface(MainActivity.mTypeface);
+            personName.setTextColor(Color.BLACK);
+            personAge = (TextView)itemView.findViewById(R.id.item_dist);
+            personAge.setTypeface(MainActivity.mTypeface);
+            personAge.setTextColor(Color.BLACK);
         }
     }
 
-    @Override
-    public int getItemCount() {
-        return items.size();
-    }
+    List<Item> persons;
+    Context context;
 
-    @Override
-    public ItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.cardview_dashboard, viewGroup, false);
-        ItemViewHolder pvh = new ItemViewHolder(v);
-        return pvh;
-    }
-
-    @Override
-    public void onBindViewHolder(ItemViewHolder itemViewHolder, int i) {
-        itemViewHolder.itemName.setText(items.get(i).itemName);
-        itemViewHolder.itemDist.setText(items.get(i).distance);
+    public RVAdapter(List<Item> persons, Context con){
+        this.context = con;
+        this.persons = persons;
     }
 
     @Override
@@ -61,4 +49,28 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.ItemViewHolder>{
         super.onAttachedToRecyclerView(recyclerView);
     }
 
+    @Override
+    public PersonViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item, viewGroup, false);
+        PersonViewHolder pvh = new PersonViewHolder(v);
+        return pvh;
+    }
+
+    @Override
+    public void onBindViewHolder(final PersonViewHolder personViewHolder, int i) {
+        final int jj = i;
+        personViewHolder.personName.setText(persons.get(i).itemName);
+        personViewHolder.personAge.setText(persons.get(i).distance);
+        personViewHolder.cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(context, Integer.toString(persons.get(jj).id), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public int getItemCount() {
+        return persons.size();
+    }
 }

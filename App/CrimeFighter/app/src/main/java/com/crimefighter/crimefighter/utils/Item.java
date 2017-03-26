@@ -5,15 +5,19 @@ package com.crimefighter.crimefighter.utils;
  */
 
 public class Item {
-    String itemName;
-    String distance;
+    public int id;
+    public String itemName;
+    public String distance;
+    public String description;
 
-    public Item(String name, double distance) {
+    public Item(int id, String name, double distance, String desc) {
         itemName = name;
         if (distance < 0.01) {
-            this.distance = "Near you";
+            this.distance = "Near You";
         } else {
-            this.distance = Double.toString(distance);
+            this.distance = Double.toString(distance) + " MI";
         }
+        this.id = id;
+        this.description = desc;
     }
 }
