@@ -25,7 +25,7 @@ public class CrimeFighterServer
          myServ.serverMain();
       }
       catch(Exception e) {
-      
+      	 e.printStackTrace();
       }
    }
 
@@ -51,6 +51,7 @@ public class CrimeFighterServer
    
       serverSocket = new ServerSocket(myPort);
    
+
       int curConnID = 1;
       while(true) {
          System.out.println("[CrimeFighterServer] Listening, next connection ID = " + curConnID);
@@ -161,7 +162,7 @@ class ConnectionHandler implements Runnable {
                for(Document d : CrimeFighterServer.watchItems.find()) {
                	   c ++;
                	   responseMessage += d.get("itemName") + ",";
-               	   responseMessage += (String) distance(lat, lon, (Double) d.get("lat"), (Double) d.get("long")) + ",";
+               	   responseMessage += "" + distance(lat, lon, (Double) d.get("lat"), (Double) d.get("long")) + ",";
                }
                responseMessage = "" + c + responseMessage.substring(0, responseMessage.length() - 1);
                System.out.println("Responding to userID " + userID + " with responseMsg: ");
