@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.crimefighter.crimefighter.R;
 import com.crimefighter.crimefighter.activities.MainActivity;
+import com.crimefighter.crimefighter.activities.StolenActivity;
 import com.google.android.gms.gcm.GcmListenerService;
 
 public class MyGcmListenerService extends GcmListenerService {
@@ -61,7 +62,15 @@ public class MyGcmListenerService extends GcmListenerService {
          * In some cases it may be useful to show a notification indicating to the user
          * that a message was received.
          */
-        sendNotification(message);
+
+        try {
+            String[] cse = message.split(",");
+            if(cse[0].equalsIgnoreCase("recovery"))
+                sendNotificationRecovery(cse);
+            else if(cse[0].equalsIgnoreCase("stolen"))
+                sendNotificationStolen(cse);
+        }
+        catch(Exception e) {}
         // [END_EXCLUDE]
     }
     // [END receive_message]
@@ -71,19 +80,40 @@ public class MyGcmListenerService extends GcmListenerService {
      *
      * @param message GCM message received.
      */
-    private void sendNotification(String message) {
-        Intent intent = new Intent(this, MainActivity.class);
+    private void sendNotificationStolen(String[] message) {
+        Intent intent = new Intent(this, StolenActivity.class); //updateintent
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle("")
-                .setContentText(message)
+                .setContentTitle("Stolen Item Alert")
+                .setContentText(message[1]+" was stolen approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_action_name) //update icon
+                .setContentIntent(pendingIntent);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    private void sendNotificationRecovery(String[] message) {
+        Intent intent = new Intent(this, MainActivity.class); //updateintent
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
+                .setContentTitle("Your Item Missing")
+                .setContentText("Your "+message[1]+" has been reported gone and went missing approximately "+(Integer.parseInt(message[2])/1000)+" seconds ago.") //update message
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setSmallIcon(R.drawable.ic_action_name) //update icon
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
