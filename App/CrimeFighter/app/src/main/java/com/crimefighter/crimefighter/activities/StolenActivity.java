@@ -2,6 +2,7 @@ package com.crimefighter.crimefighter.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -70,7 +71,7 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                advance();
             }
         });
 
@@ -87,6 +88,11 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.onCreate(mBundle);
         mMapView.getMapAsync(this);
+    }
+
+    public void advance() {
+        Intent intent = new Intent(this, WitnessActivity.class);
+        startActivity(intent);
     }
 
     @Override
