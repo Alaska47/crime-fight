@@ -55,6 +55,17 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         super.onAttachedToRecyclerView(recyclerView);
     }
 
+    public void clear() {
+        persons.clear();
+        notifyDataSetChanged();
+    }
+
+    // Add a list of items
+    public void addAll(List<Item> list) {
+        persons.addAll(list);
+        notifyDataSetChanged();
+    }
+
     @Override
     public PersonViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item, viewGroup, false);

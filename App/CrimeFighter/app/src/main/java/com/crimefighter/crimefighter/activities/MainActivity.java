@@ -25,6 +25,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.PermissionChecker;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -79,11 +80,15 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab2;
 
     private List<Item> items = new ArrayList<Item>();
-    private RecyclerView rv;
+    private static RecyclerView rv;
+    private static RVAdapter adapter;
     private static Location userLoc;
 
     final String host = "71.171.96.88";
     final int portNumber = 914;
+
+    private SwipeRefreshLayout swipeContainer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,37 +142,50 @@ public class MainActivity extends AppCompatActivity {
         getUserLocation();
         //scheduleAlarm();
 
-        new Thread(
-                new Runnable() {
-                    public void run() {
-                        while (userLoc == null) {
-                            try {
-                                Thread.sleep(100);
-                                //Log.d("Got location", "searching");
-                            }
-                            catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        String mess = "";
-                        try {
-                            mess = new RecentItemsRetreiver().execute().get();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            e.printStackTrace();
-                        }
-                        final String gg = mess;
-                        runOnUiThread(
-                                new Runnable() {
-                                    public void run() {
-                                    initializeData(gg);
-                                    initializeAdapter();
-                                    }
-                                });
 
-                    }
-                }).start();
+
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Thread(
+                        new Runnable() {
+                            public void run() {
+                                while (userLoc == null) {
+                                    try {
+                                        Thread.sleep(100);
+                                        //Log.d("Got location", "searching");
+                                    }
+                                    catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                                adapter.clear();
+                                String mess = "";
+                                try {
+                                    mess = new RecentItemsRetreiver().execute().get();
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    e.printStackTrace();
+                                }
+                                final String gg = mess;
+                                runOnUiThread(
+                                        new Runnable() {
+                                            public void run() {
+                                                initializeData(gg);
+                                                initializeAdapter();
+                                                swipeContainer.setRefreshing(false);
+                                            }
+                                        });
+
+                            }
+                        }).start();
+
+            }
+        });
 
 
 
@@ -178,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager llm = new LinearLayoutManager(this);
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
-        //initializeData();
+        initializeAdapter();
         //
 
 
@@ -249,7 +267,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(items, getApplicationContext());
+        adapter = new RVAdapter(items, getApplicationContext());
         rv.setAdapter(adapter);
     }
 
