@@ -2,6 +2,9 @@ package com.crimefighter.crimefighter.activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AlphaAnimation;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
@@ -52,38 +55,35 @@ public class IntroActivity extends AppCompatActivity {
         mIntroText = (TextView) findViewById(R.id.intro_text);
         mIntroText.setTypeface(mTypeface);
 
-        mIntroText.setVisibility(View.VISIBLE);
-        mIntroText.setAlpha(0);
+        final Animation in = new AlphaAnimation(0.0f, 1.0f);
+        in.setDuration(800);
+        final Animation out = new AlphaAnimation(1.0f, 0.0f);
+        out.setDuration(800);
 
-        new java.util.Timer().schedule( new TimerTaskCustom(), 3000);
-
-
-        mIntroText.postDelayed(new Runnable() {
+        out.setAnimationListener(new AnimationListener() {
             @Override
-            public void run() {
-                mIntroText.animate().setDuration(500).alpha(1).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mIntroText.setVisibility(View.VISIBLE);
-                    }
-                });
+            public void onAnimationEnd(Animation animation) {
+                mIntroText.startAnimation(in);
             }
-        }, 3000);
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+        in.setAnimationListener(new AnimationListener() {
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mIntroText.startAnimation(out);
+            }
+            @Override
+            public void onAnimationStart(Animation animation) {}
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        mIntroText.startAnimation(in);
+
 
     }
 
-    private class TimerTaskCustom extends TimerTask {
-
-        @Override
-        public void run() {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mIntroText.animate()
-                            .alpha(1.0f)
-                            .setDuration(1000);
-                }
-            });
-        }
-    }
 }
