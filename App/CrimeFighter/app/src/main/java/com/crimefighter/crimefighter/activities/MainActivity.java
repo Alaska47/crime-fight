@@ -1,7 +1,12 @@
 package com.crimefighter.crimefighter.activities;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -27,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mSolvNumTextView;
     private TextView mSolvTextView;
     private Button mButton;
-
+    private FloatingActionButton fab;
     private List<Item> items;
     private RecyclerView rv;
 
@@ -48,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
         mSolvTextView = (TextView)findViewById(R.id.main_solved);
         mSolvTextView.setTypeface(mTypeface);
 
-
+        fab = (FloatingActionButton) findViewById(R.id.fabio);
+        fab.setImageBitmap(textAsBitmap("!", 40, Color.WHITE));
 
         rv = (RecyclerView)findViewById(R.id.rv);
 
@@ -71,5 +77,20 @@ public class MainActivity extends AppCompatActivity {
     private void initializeAdapter(){
         RVAdapter adapter = new RVAdapter(items, getApplicationContext());
         rv.setAdapter(adapter);
+    }
+
+    public static Bitmap textAsBitmap(String text, float textSize, int textColor) {
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setTextSize(textSize);
+        paint.setColor(textColor);
+        paint.setTextAlign(Paint.Align.LEFT);
+        float baseline = -paint.ascent(); // ascent() is negative
+        int width = (int) (paint.measureText(text) + 0.0f); // round
+        int height = (int) (baseline + paint.descent() + 0.0f);
+        Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(image);
+        canvas.drawText(text, 0, baseline, paint);
+        return image;
     }
 }
