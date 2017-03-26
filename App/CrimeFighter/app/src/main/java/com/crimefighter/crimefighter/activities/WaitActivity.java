@@ -1,5 +1,6 @@
 package com.crimefighter.crimefighter.activities;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.os.AsyncTask;
@@ -132,6 +133,9 @@ public class WaitActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
                             }
                         });
+                Intent a = new Intent(getApplicationContext(), MainActivity.class);
+                a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(a);
             }
         });
         mButtonGone = (Button)findViewById(R.id.gone);
@@ -152,6 +156,9 @@ public class WaitActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
                             }
                         });
+                Intent a = new Intent(getApplicationContext(), MainActivity.class);
+                a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(a);
             }
         });
 

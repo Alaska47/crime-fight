@@ -2,6 +2,7 @@ package com.crimefighter.crimefighter.activities;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -123,6 +124,9 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
                                                 Toast.makeText(getApplicationContext(), "Sent!", Toast.LENGTH_SHORT).show();
                                             }
                                         });
+                                Intent a = new Intent(getApplicationContext(), MainActivity.class);
+                                a.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(a);
                             }
                         }).start();
 

@@ -2,6 +2,8 @@ package com.crimefighter.crimefighter.utils;
 
 import android.location.Location;
 
+import java.text.DecimalFormat;
+
 /**
  * Created by anees on 3/25/2017.
  */
@@ -18,7 +20,8 @@ public class Item {
         if (distance < 0.05) {
             this.distance = "Near You";
         } else {
-            this.distance = Double.toString(distance) + " MI";
+            String ddd = new DecimalFormat("#.##").format(distance);
+            this.distance = ddd + " MI";
         }
         this.id = id;
         this.description = desc;

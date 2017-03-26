@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity {
                 Location ad = userLoc;
                 ad.setLatitude(Double.parseDouble(values[i * 6 + 4]));
                 ad.setLongitude(Double.parseDouble(values[i * 6 + 5]));
-                items.add(new Item((i + 1), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
+                items.add(new Item(Integer.parseInt(values[i*6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
             }
         }
     }
