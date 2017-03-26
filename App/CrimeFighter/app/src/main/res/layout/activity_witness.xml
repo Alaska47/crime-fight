@@ -91,12 +91,13 @@
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:paddingBottom="15sp"
         android:layout_gravity="center">
 
         <Button
             android:id="@+id/report_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="130sp"
+            android:layout_height="50sp"
             android:theme="@style/AppTheme.Button"
             android:layout_alignParentBottom="true"
             android:text="Report"/>
