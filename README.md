@@ -52,8 +52,6 @@ Someone who forgets their laptop at a location in school might not be able to ge
 </br>
 </br>
 </br>
-</br>
-</br>
 <a href="url"><img src="/img/analytics.png" align="left" width="300" ></a>
 
 __3. Big Data for Small Crime__
