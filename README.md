@@ -32,8 +32,6 @@ CrimeFighter is designed for closed environments: colleges and schools. A laptop
 </br>
 </br>
 </br>
-</br>
-</br>
 <a href="url"><img src="/img/watch.png" align="right" width="300" ></a>
 
 __2. Watching a Lost Item__
@@ -55,9 +53,8 @@ Someone who forgets their laptop at a location in school might not be able to ge
 </br>
 </br>
 </br>
-</br>
-</br>
 <a href="url"><img src="/img/analytics.png" align="left" width="300" ></a>
+
 __3. Big Data for Small Crime__
 
 CrimeFighter uses BigParser’s API to read data from historical crime data. It can help people see where past crime was committed, and can help them determine how urgently they need to retrieve their item. Through CrimeFighter, users may find that they left their item in a high-crime area, and thus need to retrieve it as soon as possible. If CrimeFighter tells them that the item is in a low-crime area, they might return at a more convenient but later time.
