@@ -1,7 +1,6 @@
 import requests
 import json
 import csv
-import numpy
 
 BigParserAccountEmail = "neilpatelbigparser@gmail.com"
 BigParserAccountPassword = "HackTJ2017"
