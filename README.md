@@ -59,6 +59,24 @@ __3. Big Data for Small Crime__
 CrimeFighter uses BigParser’s API to read data from historical crime data. It can help people see where past crime was committed, and can help them determine how urgently they need to retrieve their item. Through CrimeFighter, users may find that they left their item in a high-crime area, and thus need to retrieve it as soon as possible. If CrimeFighter tells them that the item is in a low-crime area, they might return at a more convenient but later time.
 
 
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
 
 ----------------------------
 CRIMEFIGHTER uses MongoDB to efficiently manage its user and item databases. We are revolutionizing small crime reporting in the 21st century, using crowdsourcing and Big Data to create a complete, accurate picture when you need it most.
