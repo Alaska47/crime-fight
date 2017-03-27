@@ -22,3 +22,6 @@ CrimeFighter is designed for closed environments: colleges and schools. A laptop
 __2. Watching a Lost Item__
 
 CrimeFighter isn’t just for stopping crime that has happened, it's also for looking out for crime that might happen. If you forget an item, you can place a _Watch_ on it. Any users who walk by the location of your forgotten item will receive an alert, and can verify to make sure that them item is still there. Or, they can report that it’s gone.
+
+Why is this useful?
+Someone who forgets their laptop at a location in school might not be able to get to it until the next day. Between the time they leave this item and the time they try to pick it up, dozens of people will walk by. If the item gets stolen some time in between, having confirmations that an item was still there at 5:00 but gone at 6:00 helps pinpoint the time of the theft.
