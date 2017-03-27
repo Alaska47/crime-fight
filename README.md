@@ -10,7 +10,7 @@ CrimeFighter is a beautiful, modern, lightweight app that revolutionizes and mod
 <a href="url"><img src="/img/main.png" align="center" width="300" ></a>
 <a href="url"><img src="/img/loading.png" align="center" width="300" ></a>
 
-
+</br>
 CrimeFighter has three main functionalities:
 
 <a href="url"><img src="/img/report.png" align="left" width="300" ></a>
