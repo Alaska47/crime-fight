@@ -5,5 +5,6 @@ HackTJ Submission for 2017
 
 
 
-CRIMEFIGHTER is a beautiful, modern, lightweight app that revolutionizes and modernizes crime reporting.
-CRIMEFIGHTER has three main functionalities:
+CrimeFighter is a beautiful, modern, lightweight app that revolutionizes and modernizes crime reporting.
+
+CrimeFighter has three main functionalities:
