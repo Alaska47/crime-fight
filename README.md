@@ -44,7 +44,20 @@ Why is this useful?
 
 Someone who forgets their laptop at a location in school might not be able to get to it until the next day. Between the time they leave this item and the time they try to pick it up, dozens of people will walk by. If the item gets stolen some time in between, having confirmations that an item was still there at 5:00 but gone at 6:00 helps pinpoint the time of the theft.
 
-
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+<a href="url"><img src="/img/analytics.png" align="left" width="300" ></a>
 __3. Big Data for Small Crime__
 
 CrimeFighter uses BigParser’s API to read data from historical crime data. It can help people see where past crime was committed, and can help them determine how urgently they need to retrieve their item. Through CrimeFighter, users may find that they left their item in a high-crime area, and thus need to retrieve it as soon as possible. If CrimeFighter tells them that the item is in a low-crime area, they might return at a more convenient but later time.
