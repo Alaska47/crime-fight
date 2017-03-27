@@ -1,2 +1,6 @@
 # This is the implementation of BigParser's API.
 We use the API to get Historical Crime data to provide Analytics and insights for our users.
+
+The initial supported region is the D.C. Metro Area.
+
+We look forward to expanding to other areas in the U.s.
