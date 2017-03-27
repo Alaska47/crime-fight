@@ -9,7 +9,8 @@ CrimeFighter is a beautiful, modern, lightweight app that revolutionizes and mod
 
 CrimeFighter has three main functionalities:
 
-1. Reporting a stolen item
+*1. Reporting a stolen item*
+
 People can report an item missing and those in close vicinity to the crime will be alerted with a description of the object or thief. If they have seen the item or the thief, they can _Witness_ it.
 
 _Witness_ allows users who have seen a thief or object after the crime to update the object’s location and provide additional details about the perpetrator.
