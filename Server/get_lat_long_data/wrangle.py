@@ -4,7 +4,7 @@ from xvfbwrapper import Xvfb
 import atexit
 import dryscrape
 import time
-import numpy
+
 data_sources = {
     'Wells Fargo': {
         'url': 'https://www.wellsfargo.com/mortgage/rates/',
