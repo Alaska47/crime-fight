@@ -7,8 +7,8 @@ HackTJ Submission for 2017
 
 CrimeFighter is a beautiful, modern, lightweight app that revolutionizes and modernizes crime reporting.
 
-<a href="url"><img src="/img/main.png" align="left" width="300" ></a>
-<a href="url"><img src="/img/loading.png" align="right" width="300" ></a>
+<a href="url"><img src="/img/main.png" align="center" width="300" ></a>
+<a href="url"><img src="/img/loading.png" align="center" width="300" ></a>
 
 
 CrimeFighter has three main functionalities:
