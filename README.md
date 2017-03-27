@@ -24,7 +24,10 @@ _Witness_ allows users who have seen a thief or object after the crime to update
 Where is this useful, and why would you use this over the police?
 
 CrimeFighter is designed for closed environments: colleges and schools. A laptop or backpack stolen inside a college or school is likely to remain inside the school. Quick, immediate, and rapid alerts increase the likelihood of finding these items. Using the power of your classmates and the cloud, CrimeFighter revolutionizes tracking small theft in real-time.
-
+</br>
+</br>
+</br>
+</br>
 <a href="url"><img src="/img/watch.png" align="left" width="300" ></a>
 
 __2. Watching a Lost Item__
