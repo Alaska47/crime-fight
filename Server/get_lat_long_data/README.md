@@ -9,4 +9,4 @@ We look forward to expanding to other areas in the U.s.
 Data is from https://www.kaggle.com/vinchinzu/dc-metro-crime-data and rendered using Google Maps for the user.
 
 
-# Big Data. Small Crime. CrimeFighter
+# Big Data. Small Crime.
