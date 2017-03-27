@@ -13,7 +13,7 @@ CrimeFighter is a beautiful, modern, lightweight app that revolutionizes and mod
 
 CrimeFighter has three main functionalities:
 
-<a href="url"><img src="/img/report.png" align="left" width="200" ></a>
+<a href="url"><img src="/img/report.png" align="left" width="300" ></a>
 
 __1. Reporting a stolen item__
 
