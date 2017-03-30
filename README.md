@@ -3,7 +3,7 @@ _Crime Solutions for the Digital Age_
 
 HackTJ Submission for 2017
 
-**CrimeFighter is the winner of the HackTJ 2017 BigParser Grand Prize, winning $650**
+**CrimeFighter is the winner of the HackTJ 2017 BigParser Grand Prize**
 -------------------------------
 
 CrimeFighter is a beautiful, modern, lightweight app that revolutionizes crime reporting.
