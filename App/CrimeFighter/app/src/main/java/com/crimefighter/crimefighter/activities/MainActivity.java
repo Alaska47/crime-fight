@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab1;
     private FloatingActionButton fab2;
 
+
+    private List<byte[]> images = new ArrayList<byte[]>();
     private List<Item> items = new ArrayList<Item>();
     private static RecyclerView rv;
     private static RVAdapter adapter;
@@ -253,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeData(String input) {
         if(input.equals("")) {
-            items.add(new Item(1, "Chocolate", 0.05, "i am a gay homo", userLoc));
+            items.add(new Item(1, "Chocolate", 0.05, "i am a gay homo", userLoc, new byte[0]));
         } else {
             String[] values = input.split(",");
             int num = Integer.parseInt(values[0]);
@@ -262,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                 Location ad = userLoc;
                 ad.setLatitude(Double.parseDouble(values[i * 6 + 4]));
                 ad.setLongitude(Double.parseDouble(values[i * 6 + 5]));
-                items.add(new Item(Integer.parseInt(values[i*6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
+                items.add(new Item(Integer.parseInt(values[i*6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad, images.get(i)));
             }
         }
     }
@@ -308,6 +310,18 @@ public class MainActivity extends AppCompatActivity {
                 oos.writeObject(commandStr);
                 ois = new ObjectInputStream(socket.getInputStream());
                 message = (String) ois.readObject();
+                String[] values = message.split(",");
+                int num = Integer.parseInt(values[0]);
+                //TODO: receive all byte arrays in order and store them in an arraylist
+                for(int i = 0; i < num; i++) {
+                    byte[] bb = (byte[]) ois.readObject();
+                    images.add(bb);
+                    /*
+                     bitmap = BitmapFactory.decodeByteArray(bb , 0, bb .length);
+                    Drawable d = new BitmapDrawable(getResources(), bitmap);
+                    dd[i] = d;
+                    */
+                }
                 ois.close();
                 oos.close();
                 socket.close();

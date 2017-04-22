@@ -1,7 +1,10 @@
 package com.crimefighter.crimefighter.activities;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -101,10 +105,20 @@ public class WaitActivity extends AppCompatActivity {
             realLocation = (String[]) savedInstanceState.getSerializable("location");
         }
 
+
+
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mNameTextView = (TextView)findViewById(R.id.name);
         mNameTextView.setTypeface(mTypeface);
         mNameTextView.setText(name);
+
+        //TODO: instantiate imageview
+        Bundle extras = getIntent().getExtras();
+        byte[] b = extras.getByteArray("picture");
+        Bitmap bmp = BitmapFactory.decodeByteArray(b, 0, b.length);
+        //ImageView image = (ImageView) findViewById(R.id.imageView1);
+        //image.setImageBitmap(bmp);
+
         mDistanceTextView = (TextView)findViewById(R.id.distance);
         mDistanceTextView.setTypeface(mTypeface);
         if(distance.contains("Near")) {

@@ -32,11 +32,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
 
         PersonViewHolder(View itemView) {
             super(itemView);
-            cv = (CardView)itemView.findViewById(R.id.cv);
-            personName = (TextView)itemView.findViewById(R.id.item_name);
+            cv = (CardView) itemView.findViewById(R.id.cv);
+            personName = (TextView) itemView.findViewById(R.id.item_name);
             personName.setTypeface(MainActivity.mTypeface);
             personName.setTextColor(Color.BLACK);
-            personAge = (TextView)itemView.findViewById(R.id.item_dist);
+            personAge = (TextView) itemView.findViewById(R.id.item_dist);
             personAge.setTypeface(MainActivity.mTypeface);
             personAge.setTextColor(Color.BLACK);
         }
@@ -45,7 +45,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
     List<Item> persons;
     Context context;
 
-    public RVAdapter(List<Item> persons, Context con){
+    public RVAdapter(List<Item> persons, Context con) {
         this.context = con;
         this.persons = persons;
     }
@@ -81,13 +81,14 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
         personViewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            Intent intent = new Intent(context, WaitActivity.class);
-            intent.putExtra("id", Integer.toString(persons.get(jj).id));
-            intent.putExtra("name", (persons.get(jj).itemName));
-            intent.putExtra("distance", (persons.get(jj).distance));
-            intent.putExtra("description", (persons.get(jj).description));
-            intent.putExtra("location", new String[] {Double.toString(persons.get(jj).dd.getLatitude()), Double.toString(persons.get(jj).dd.getLongitude())});
-            context.startActivity(intent);
+                Intent intent = new Intent(context, WaitActivity.class);
+                intent.putExtra("id", Integer.toString(persons.get(jj).id));
+                intent.putExtra("name", (persons.get(jj).itemName));
+                intent.putExtra("distance", (persons.get(jj).distance));
+                intent.putExtra("description", (persons.get(jj).description));
+                intent.putExtra("location", new String[]{Double.toString(persons.get(jj).dd.getLatitude()), Double.toString(persons.get(jj).dd.getLongitude())});
+                intent.putExtra("image", persons.get(jj).img);
+                context.startActivity(intent);
             }
         });
     }
