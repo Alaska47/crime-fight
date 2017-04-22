@@ -39,8 +39,8 @@
             android:text="Powered by"
             android:textColor="@color/white"
             android:gravity="center"
-            android:paddingLeft="70sp"
-            android:paddingBottom="40sp"
+            android:paddingLeft="66sp"
+            android:paddingBottom="35sp"
             android:textSize="14sp"
             />
         <ImageView
@@ -49,7 +49,7 @@
             android:layout_height="match_parent"
             android:src="@drawable/bplogo"
             android:paddingRight="60sp"
-            android:paddingBottom="33sp"
+            android:paddingBottom="28sp"
             />
     </LinearLayout>
 
