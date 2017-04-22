@@ -1,12 +1,16 @@
 package com.crimefighter.crimefighter.activities;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -41,6 +45,8 @@ public class IntroActivity extends AppCompatActivity {
     private boolean isReceiverRegistered;
 
     final String userID = Integer.toString(1000 + (new Random()).nextInt(2000 - 1000 + 1));
+    private static final int REQUEST_FINE_LOCATION=0;
+
 
     public void advance() {
         Intent intent = new Intent(this,LoginActivity.class);
@@ -121,8 +127,7 @@ public class IntroActivity extends AppCompatActivity {
         };
         registerReceiver();
 
-
-
+        loadPermissions(Manifest.permission.ACCESS_FINE_LOCATION,REQUEST_FINE_LOCATION);
 
     }
 
@@ -169,6 +174,32 @@ public class IntroActivity extends AppCompatActivity {
 
     public String getData(String key) {
         return getSharedPreferences("XPLORE_PREFS", Context.MODE_PRIVATE).getString(key, "");
+    }
+
+    private void loadPermissions(String perm,int requestCode) {
+        if (ContextCompat.checkSelfPermission(this, perm) != PackageManager.PERMISSION_GRANTED) {
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, perm)) {
+                ActivityCompat.requestPermissions(this, new String[]{perm},requestCode);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_FINE_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // granted
+                }
+                else{
+                    // no granted
+                }
+                return;
+            }
+
+        }
+
     }
 
 }
