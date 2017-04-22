@@ -55,6 +55,19 @@
         android:textColor="@color/white"
         android:textSize="15sp"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5">
+
+        <ImageView
+            android:id="@+id/wait_picture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/ic_camera_alt_white_24dp"/>
+    </LinearLayout>
+
+
     <Button
         android:id="@+id/here"
         android:layout_width="220sp"
@@ -71,14 +84,5 @@
         android:theme="@style/AppTheme.Button"
         android:text="Gone"
         android:layout_gravity="center"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5"/>
-
-
-
-
 
 </LinearLayout>
