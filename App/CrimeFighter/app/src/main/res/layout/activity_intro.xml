@@ -39,15 +39,17 @@
             android:text="Powered by"
             android:textColor="@color/white"
             android:gravity="center"
-            android:paddingLeft="40sp"
+            android:paddingLeft="70sp"
             android:paddingBottom="40sp"
+            android:textSize="14sp"
             />
         <ImageView
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:src="@drawable/bp-logo"
-            android:paddingBottom="40sp"
+            android:src="@drawable/bplogo"
+            android:paddingRight="60sp"
+            android:paddingBottom="33sp"
             />
     </LinearLayout>
 
