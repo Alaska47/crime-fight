@@ -26,8 +26,7 @@ public class testconnect {
 
 		//PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 		System.out.println("Sending...");
-		oos.writeObject("gay faf\n");
-		//out.println("gay faf");
+		oos.writeObject("aay faf\n");
 		//out.flush();
 		System.out.println("Done");
 	}

@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeData(String input) {
         if(input.equals("")) {
-            items.add(new Item(1, "Chocolate", 0.05, "i am a gay homo", userLoc, new byte[0]));
+            items.add(new Item(1, "Chocolate", 0.05, "Snickers packet", userLoc, new byte[0]));
         } else {
             String[] values = input.split(",");
             int num = Integer.parseInt(values[0]);

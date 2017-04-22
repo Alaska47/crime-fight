@@ -1,4 +1,5 @@
-#Developed by William Zhang 2017
+#BigParser base code by William Zhang 2017
+#Implemented by Nikhil Sardana for Crime Fight
 import pygsheets
 import sys
 import csv

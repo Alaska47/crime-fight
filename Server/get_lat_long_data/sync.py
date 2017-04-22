@@ -2,7 +2,6 @@ import requests
 import json
 import csv
 
-
 BigParserAccountEmail = "neilpatelbigparser@gmail.com"
 BigParserAccountPassword = "HackTJ2017"
 FileIDFromGrid = "58d73444478af706507ad13c"
