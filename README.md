@@ -80,5 +80,5 @@ CrimeFighter uses BigParser’s API to read data from historical crime data. It 
 
 
 ----------------------------
-CrimeFighter uses MongoDB to efficiently manage its user and item databases. We are revolutionizing small crime reporting in the 21st century, using crowdsourcing and Big Data to create a complete, accurate picture when you need it most.
+CrimeFighter uses MongoDB to efficiently manage its user and item databases. We are revolutionizing small crime reporting in the 21st century, using crowdsourcing and big data to create a complete, accurate picture when you need it most.
 
