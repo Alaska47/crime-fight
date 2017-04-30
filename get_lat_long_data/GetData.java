@@ -12,7 +12,7 @@ public class GetData
    public static void main(String[] args) throws FileNotFoundException, IOException {
 
    try {
-             Process pro = Runtime.getRuntime().exec("python3 sync.py");
+             Process pro = Runtime.getRuntime().exec("python3 bigparser.py");
 
            BufferedReader stdInput = new BufferedReader(new InputStreamReader(pro.getInputStream()));
            BufferedReader stdError = new BufferedReader(new InputStreamReader(pro.getErrorStream()));
@@ -32,7 +32,7 @@ public class GetData
            }
            catch(Exception e) {}
         } catch(Exception epx) {
-            Process pro = Runtime.getRuntime().exec("python sync.py");
+            Process pro = Runtime.getRuntime().exec("python bigparser.py");
 
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(pro.getInputStream()));
             BufferedReader stdError = new BufferedReader(new InputStreamReader(pro.getErrorStream()));
