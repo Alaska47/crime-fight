@@ -92,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeContainer;
 
 
+    public static Context context1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -145,27 +147,50 @@ public class MainActivity extends AppCompatActivity {
         getUserLocation();
         //scheduleAlarm();
 
+        context1 = getApplicationContext();
+
 
 
 
         swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
         // Setup refresh listener which triggers new data loading
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        final SwipeRefreshLayout.OnRefreshListener swipeRefreshListner = new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 new Thread(
                         new Runnable() {
                             public void run() {
+                                long startTime = System.currentTimeMillis();
                                 while (userLoc == null) {
                                     try {
                                         Thread.sleep(100);
-                                        //Log.d("Got location", "searching");
+                                        if(System.currentTimeMillis() - startTime > 7500) {
+                                            userLoc = new Location("");
+                                            userLoc.setLatitude(38.8175873);
+                                            userLoc.setLongitude(-77.1687371);
+                                            runOnUiThread(
+                                                    new Runnable() {
+                                                        public void run() {
+                                                            Toast.makeText(getApplicationContext(), "Using default location", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                            break;
+                                        }
+                                        Log.d("WatchActivity", "searching");
+
                                     }
                                     catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
                                 }
-                                adapter.clear();
+                                Log.d("WatchActivity", "got location");
+                                runOnUiThread(
+                                        new Runnable() {
+                                            public void run() {
+                                                adapter.clear();
+                                            }
+                                        });
+
                                 String mess = "";
                                 try {
                                     mess = new RecentItemsRetreiver().execute().get();
@@ -188,9 +213,17 @@ public class MainActivity extends AppCompatActivity {
                         }).start();
 
             }
+        };
+
+        swipeContainer.setOnRefreshListener(swipeRefreshListner);
+
+        swipeContainer.post(new Runnable() {
+            @Override public void run() {
+                swipeContainer.setRefreshing(true);
+                // directly call onRefresh() method
+                swipeRefreshListner.onRefresh();
+            }
         });
-
-
 
         //TODO: remove temp
 
@@ -254,8 +287,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initializeData(String input) {
-        if(input.equals("")) {
-            items.add(new Item(1, "Chocolate", 0.05, "Snickers packet", userLoc, new byte[0]));
+        Log.d("crimefighter", input);
+        if(input.length() < 20) {
+            //items.add(new Item(1, "Chocolate", 0.05, "Snickers packet", userLoc, new byte[0]));
         } else {
             String[] values = input.split(",");
             int num = Integer.parseInt(values[0]);
@@ -264,7 +298,11 @@ public class MainActivity extends AppCompatActivity {
                 Location ad = userLoc;
                 ad.setLatitude(Double.parseDouble(values[i * 6 + 4]));
                 ad.setLongitude(Double.parseDouble(values[i * 6 + 5]));
-                items.add(new Item(Integer.parseInt(values[i*6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad, images.get(i)));
+                try {
+                    items.add(new Item(Integer.parseInt(values[i * 6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
+                } catch (Exception e) {
+                    items.add(new Item(Integer.parseInt(values[i * 6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
+                }
             }
         }
     }
@@ -312,16 +350,6 @@ public class MainActivity extends AppCompatActivity {
                 message = (String) ois.readObject();
                 String[] values = message.split(",");
                 int num = Integer.parseInt(values[0]);
-                //TODO: receive all byte arrays in order and store them in an arraylist
-                for(int i = 0; i < num; i++) {
-                    byte[] bb = (byte[]) ois.readObject();
-                    images.add(bb);
-                    /*
-                     bitmap = BitmapFactory.decodeByteArray(bb , 0, bb .length);
-                    Drawable d = new BitmapDrawable(getResources(), bitmap);
-                    dd[i] = d;
-                    */
-                }
                 ois.close();
                 oos.close();
                 socket.close();

@@ -91,11 +91,20 @@
         android:layout_height="0dp"
         android:layout_weight="7">
 
-        <ImageButton
-            android:id="@+id/watch_picture"
+        <Button
+            android:id="@+id/camera_button"
+            android:layout_width="match_parent"
+            android:layout_height="60sp"
+            android:background="@color/white"
+            android:text="Take a Picture"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/camera_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:src="@drawable/ic_camera_alt_white_24dp"/>
+            android:visibility="gone"/>
+
     </LinearLayout>
 
     <Button

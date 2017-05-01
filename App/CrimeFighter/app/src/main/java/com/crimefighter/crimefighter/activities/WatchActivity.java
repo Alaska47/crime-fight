@@ -16,35 +16,37 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.SphericalUtil;
+import com.crimefighter.crimefighter.utils.SingleShotLocationProvider;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -56,13 +58,9 @@ import java.util.concurrent.ExecutionException;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class WatchActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class WatchActivity extends AppCompatActivity {
 
-    private static final int PERMISSIONS_MAP = 1337;
     private static Location userLoc;
-    private MapView mMapView;
-    private static GoogleMap mMap;
-    private Bundle mBundle;
 
     private Typeface mTypeface;
     private TextView mTitle;
@@ -75,6 +73,12 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
     private String sDescription;
 
     private Button mReportButton;
+    private Button mCameraButton;
+    private static ImageView cameraView;
+
+    private static final int REQUEST_RUNTIME_PERMISSION = 1;
+
+    private StorageReference mStorageRef;
 
     final String host = "71.171.96.88";
     final int portNumber = 914;
@@ -86,6 +90,9 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_watch);
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+
+
 
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mTitle = (TextView)findViewById(R.id.title);
@@ -99,21 +106,49 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
         mReportButton = (Button) findViewById(R.id.report_button);
         mReportButton.setTypeface(mTypeface);
 
+        cameraView = (ImageView) findViewById(R.id.camera_view);
+
+        mCameraButton = (Button) findViewById(R.id.camera_button);
+        mCameraButton.setTypeface(mTypeface);
+        mCameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                takeImageFromCamera(view);
+            }
+        });
+
+        getUserLocation();
+
         mReportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 new Thread(
                         new Runnable() {
                             public void run() {
+                                long startTime = System.currentTimeMillis();
                                 while (userLoc == null) {
                                     try {
                                         Thread.sleep(100);
-                                        //Log.d("Got location", "searching");
+                                        if(System.currentTimeMillis() - startTime > 7500) {
+                                            userLoc = new Location("");
+                                            userLoc.setLatitude(38.8175873);
+                                            userLoc.setLongitude(-77.1687371);
+                                            runOnUiThread(
+                                                    new Runnable() {
+                                                        public void run() {
+                                                            Toast.makeText(getApplicationContext(), "Using default location", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                            break;
+                                        }
+                                        Log.d("WatchActivity", "searching");
+
                                     }
                                     catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
                                 }
+                                Log.d("WatchActivity", "got location");
                                 runOnUiThread(
                                         new Runnable() {
                                             public void run() {
@@ -129,6 +164,9 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
                                 } catch (ExecutionException e) {
                                     e.printStackTrace();
                                 }
+
+                                Log.d("WatchActivity", "sent");
+
                                 runOnUiThread(
                                         new Runnable() {
                                             public void run() {
@@ -145,105 +183,35 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
 
             }
         });
-        if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSIONS_MAP);
-        }
-        try {
-            MapsInitializer.initialize(this);
-        } catch (Exception e) {
-            Log.e("mapview", "", e);
-        }
 
-        mMapView = (MapView) findViewById(R.id.map);
-        mMapView.onCreate(mBundle);
-        mMapView.getMapAsync(this);
+        checkPermission();
 
+
+    }
+
+    void checkPermission() {
+        //select which permission you want
+        final String permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
+        if (ContextCompat.checkSelfPermission(WatchActivity.this, permission)
+                != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(WatchActivity.this, permission)) {
+            } else {
+                ActivityCompat.requestPermissions(WatchActivity.this, new String[]{permission}, REQUEST_RUNTIME_PERMISSION);
+            }
+        }
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-      /*
-      if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-      } else {
-          mMap.setMyLocationEnabled(true);
-      }
-      */
-
-        Log.d("DashboardFragment", "map ready");
-
-        if(selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            Log.d("Dash", "good");
-            SmartLocation.with(this).location()
-                    .oneFix()
-                    .start(
-                            new OnLocationUpdatedListener() {
-                                @Override
-                                public void onLocationUpdated(Location location) {
-                                    userLoc = location;
-                                    //Log.d("Got location", location.toString());
-                                }
-                            });
-
-            new Thread(
-                    new Runnable() {
-                        public void run() {
-                            while (userLoc == null) {
-                                try {
-                                    Thread.sleep(100);
-                                    //Log.d("Got location", "searching");
-                                }
-                                catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            LatLng newLatLng = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
-                            LatLngBounds bounds = new LatLngBounds.Builder().
-                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 0)).
-                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 90)).
-                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 180)).
-                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 270)).build();
-                            final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
-                            runOnUiThread(
-                                    new Runnable() {
-                                        public void run() {
-                                            mMap.moveCamera(cameraUpdate);
-                                            mMap.moveCamera(cameraUpdate);
-                                            Marker home = mMap.addMarker(new MarkerOptions().position(new LatLng(userLoc.getLatitude(), userLoc.getLongitude())).icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScale(BitmapFactory.decodeResource(getResources(), R.drawable.red_pin), 0.4f))));
-                                        }
-                                    });
-                        }
-                    }).start();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_RUNTIME_PERMISSION:
+                final int numOfRequest = grantResults.length;
+                final boolean isGranted = numOfRequest == 1
+                        && PackageManager.PERMISSION_GRANTED == grantResults[numOfRequest - 1];
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-        else {
-            Log.d("Dash", "bad");
-        }
-        mMap.getUiSettings().setScrollGesturesEnabled(true);
-
-    }
-
-    public boolean selfPermissionGranted(String permission) {
-        // For Android < Android M, self permissions are always granted.
-        boolean result = true;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                // targetSdkVersion >= Android M, we can
-                // use Context#checkSelfPermission
-                result = checkSelfPermission(permission)
-                        == PackageManager.PERMISSION_GRANTED;
-            }
-            else {
-                // targetSdkVersion < Android M, we have to use PermissionChecker
-                result = PermissionChecker.checkSelfPermission(this, permission)
-                        == PermissionChecker.PERMISSION_GRANTED;
-            }
-        }
-
-        return result;
     }
 
     public Bitmap bitmapSizeByScale(Bitmap bitmapIn, float scall_zero_to_one_f) {
@@ -255,35 +223,48 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
         return bitmapOut;
     }
 
+    private void getUserLocation() {
+        SmartLocation.with(this).location()
+                .oneFix()
+                .start(
+                        new OnLocationUpdatedListener() {
+                            @Override
+                            public void onLocationUpdated(Location location) {
+                                userLoc = location;
+                                Log.d("WatchActivity", location.toString());
+                            }
+                        });
+        SingleShotLocationProvider.requestSingleUpdate(getApplicationContext(),
+                new SingleShotLocationProvider.LocationCallback() {
+                    @Override public void onNewLocationAvailable(SingleShotLocationProvider.GPSCoordinates location) {
+                        Log.d("WatchActivity", "my location is " + location.toString());
+                    }
+                });
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        mMapView.onSaveInstanceState(outState);
     }
 
     @Override
     public void onResume() {
-        mMapView.onResume();
         super.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mMapView.onPause();
-
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mMapView.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mMapView.onLowMemory();
     }
 
     @Override
@@ -301,25 +282,40 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
         protected String doInBackground (Void...params){
             Socket socket = null;
             ObjectOutputStream oos = null;
+            ObjectInputStream ois = null;
             String message = "";
             File path = new File(getFilesDir(), "crime_images/");
             if (!path.exists()) path.mkdirs();
             File image = new File(path, "image.jpg");
+            Log.d("WatchActivity", ""+image.exists());
             try {
                 socket = new Socket(host, portNumber);
                 oos = new ObjectOutputStream(socket.getOutputStream());
+                ois = new ObjectInputStream(socket.getInputStream());
                 String commandStr = "3," + getData("UserID") + "," + sItemName + "," + sDescription + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude());
                 Log.d("commandStr", commandStr);
                 oos.writeObject(commandStr);
-                //TODO: send the image file as a byte array
-
-                Bitmap myBitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-                myBitmap = bitmapSizeByScale(myBitmap, 0.1f);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                myBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
-                Log.d("ImageSender", "" + byteArray.length);
-                oos.writeObject(byteArray);
+                message = (String) ois.readObject();
+                Log.d("WatchActivity", "image_id: " + message);
+                image = saveBitmapToFile(image);
+                Uri file = Uri.fromFile(image);
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageReference = storage.getReferenceFromUrl("gs://crimefighter-162707.appspot.com/").child(message + ".jpg");
+                storageReference.putFile(file)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // Get a URL to the uploaded content
+                                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                Log.d("WatchActivity", "" + downloadUrl.toString());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                Log.d("WatchActivity", "image NOT sent");
+                            }
+                        });
                 oos.close();
                 socket.close();
                 image.delete();
@@ -368,9 +364,53 @@ public class WatchActivity extends AppCompatActivity implements OnMapReadyCallba
                 Log.d("MainActivity", "" + imageFile.exists());
                 Bitmap bitmap = decodeSampledBitmapFromFile(imageFile.getAbsolutePath(), 1000, 700);
                 Drawable d = new BitmapDrawable(getResources(), bitmap);
-                //rCaptureImage.setImageDrawable(d);
-                //rCaptureImage.setVisibility(View.VISIBLE);
+                cameraView.setImageDrawable(d);
+                cameraView.setVisibility(View.VISIBLE);
+                mCameraButton.setVisibility(View.GONE);
             }
+        }
+    }
+
+    public File saveBitmapToFile(File file){
+        try {
+
+            // BitmapFactory options to downsize the image
+            BitmapFactory.Options o = new BitmapFactory.Options();
+            o.inJustDecodeBounds = true;
+            o.inSampleSize = 6;
+            // factor of downsizing the image
+
+            FileInputStream inputStream = new FileInputStream(file);
+            //Bitmap selectedBitmap = null;
+            BitmapFactory.decodeStream(inputStream, null, o);
+            inputStream.close();
+
+            // The new size we want to scale to
+            final int REQUIRED_SIZE=75;
+
+            // Find the correct scale value. It should be the power of 2.
+            int scale = 1;
+            while(o.outWidth / scale / 2 >= REQUIRED_SIZE &&
+                    o.outHeight / scale / 2 >= REQUIRED_SIZE) {
+                scale *= 2;
+            }
+
+            BitmapFactory.Options o2 = new BitmapFactory.Options();
+            o2.inSampleSize = scale;
+            inputStream = new FileInputStream(file);
+
+            Bitmap selectedBitmap = BitmapFactory.decodeStream(inputStream, null, o2);
+            inputStream.close();
+
+            // here i override the original image file
+            file.createNewFile();
+            FileOutputStream outputStream = new FileOutputStream(file);
+
+            selectedBitmap.compress(Bitmap.CompressFormat.JPEG, 100 , outputStream);
+
+            return file;
+        } catch (Exception e) {
+            return null;
         }
     }
 

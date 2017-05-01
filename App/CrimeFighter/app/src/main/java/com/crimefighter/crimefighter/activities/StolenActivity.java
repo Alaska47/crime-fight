@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
 import com.google.android.gms.common.SignInButton;
@@ -209,10 +210,24 @@ public class StolenActivity extends AppCompatActivity  implements OnMapReadyCall
             new Thread(
                     new Runnable() {
                         public void run() {
+                            long startTime = System.currentTimeMillis();
                             while (userLoc == null) {
                                 try {
                                     Thread.sleep(100);
-                                    //Log.d("Got location", "searching");
+                                    if(System.currentTimeMillis() - startTime > 7500) {
+                                        userLoc = new Location("");
+                                        userLoc.setLatitude(38.8175873);
+                                        userLoc.setLongitude(-77.1687371);
+                                        runOnUiThread(
+                                                new Runnable() {
+                                                    public void run() {
+                                                        Toast.makeText(getApplicationContext(), "Using default location", Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                        break;
+                                    }
+                                    Log.d("WatchActivity", "searching");
+
                                 }
                                 catch (InterruptedException e) {
                                     e.printStackTrace();

@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "451484624083",
-    "firebase_url": "https://crimefighter-4987b.firebaseio.com",
-    "project_id": "crimefighter-4987b",
-    "storage_bucket": "crimefighter-4987b.appspot.com"
+    "project_number": "115055366247",
+    "firebase_url": "https://crimefighter-162707.firebaseio.com",
+    "project_id": "crimefighter-162707",
+    "storage_bucket": "crimefighter-162707.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:451484624083:android:52efeacf21a05d63",
+        "mobilesdk_app_id": "1:115055366247:android:52efeacf21a05d63",
         "android_client_info": {
           "package_name": "com.crimefighter.crimefighter"
         }
       },
       "oauth_client": [
         {
-          "client_id": "451484624083-iogb19873e4kdoott05dhem9jbqp3p4b.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.crimefighter.crimefighter",
-            "certificate_hash": "288847e6d04378ec50f678467d0a731baea69631"
-          }
-        },
-        {
-          "client_id": "451484624083-s6pueo1b5u15jiiqt16sgqagltmgkif7.apps.googleusercontent.com",
+          "client_id": "115055366247-m56hij73r8vafj84a2vd0i5puslcvqef.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA0iEmz_4z8EmWMx5lDDMouGM12tK6I2Mc"
+          "current_key": "AIzaSyC0XdYpHjjsevYSXxjHjXmTYMg-5dGQ92s"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "451484624083-s6pueo1b5u15jiiqt16sgqagltmgkif7.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2

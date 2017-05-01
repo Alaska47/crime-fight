@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,7 +18,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -106,18 +114,37 @@ public class WaitActivity extends AppCompatActivity {
         }
 
 
-
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mNameTextView = (TextView)findViewById(R.id.name);
         mNameTextView.setTypeface(mTypeface);
         mNameTextView.setText(name);
-
-        //TODO: instantiate imageview
+        final ImageView cameraView = (ImageView) findViewById(R.id.wait_picture);
+        /*
+        ImageView cameraView = (ImageView) findViewById(R.id.wait_picture);
         Bundle extras = getIntent().getExtras();
         byte[] b = extras.getByteArray("picture");
-        Bitmap bmp = BitmapFactory.decodeByteArray(b, 0, b.length);
-        //ImageView image = (ImageView) findViewById(R.id.imageView1);
-        //image.setImageBitmap(bmp);
+        try {
+            if (b != null || b.length != 0) {
+                Bitmap bmp = BitmapFactory.decodeByteArray(b, 0, b.length);
+                cameraView.setImageBitmap(bmp);
+            }
+        } catch (NullPointerException e) {
+
+        }
+        */
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageReference = storage.getReferenceFromUrl("gs://crimefighter-162707.appspot.com/").child(id + ".jpg");
+        final long ONE_MEGABYTE = 1024 * 1024;
+        storageReference.getBytes(3*ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                cameraView.setImageBitmap(bitmap);
+                findViewById(R.id.progress).setVisibility(View.GONE);
+                cameraView.setVisibility(View.VISIBLE);
+            }
+        });
 
         mDistanceTextView = (TextView)findViewById(R.id.distance);
         mDistanceTextView.setTypeface(mTypeface);

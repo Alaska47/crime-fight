@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,12 +26,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
 import com.crimefighter.crimefighter.services.RegistrationIntentService;
 import com.crimefighter.crimefighter.utils.QuickstartPreferences;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Random;
 import java.util.TimerTask;
@@ -47,16 +57,33 @@ public class IntroActivity extends AppCompatActivity {
     final String userID = Integer.toString(1000 + (new Random()).nextInt(2000 - 1000 + 1));
     private static final int REQUEST_FINE_LOCATION=0;
 
+    FirebaseAuth mAuth;
 
     public void advance() {
-        Intent intent = new Intent(this,LoginActivity.class);
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            // do your stuff
+        } else {
+            signInAnonymously();
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
+
+        mAuth = FirebaseAuth.getInstance();
 
         if(getData("firstRun").equals("")) {
             storeData("UserID", userID);
@@ -127,8 +154,9 @@ public class IntroActivity extends AppCompatActivity {
         };
         registerReceiver();
 
-        loadPermissions(Manifest.permission.ACCESS_FINE_LOCATION,REQUEST_FINE_LOCATION);
-
+        if(Build.VERSION.RELEASE.equals("6.0.1")) {
+            loadPermissions(Manifest.permission.ACCESS_FINE_LOCATION,REQUEST_FINE_LOCATION);
+        }
     }
 
     @Override
@@ -174,6 +202,27 @@ public class IntroActivity extends AppCompatActivity {
 
     public String getData(String key) {
         return getSharedPreferences("XPLORE_PREFS", Context.MODE_PRIVATE).getString(key, "");
+    }
+
+    private void signInAnonymously() {
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d("IntroActivity", "signInAnonymously:success");
+                            FirebaseUser user = mAuth.getCurrentUser();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w("IntroActivity", "signInAnonymously:failure", task.getException());
+                            Toast.makeText(IntroActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+                        // ...
+                    }
+                });
     }
 
     private void loadPermissions(String perm,int requestCode) {

@@ -14,9 +14,8 @@ public class Item {
     public String distance;
     public String description;
     public Location dd;
-    public byte[] img;
 
-    public Item(int id, String name, double distance, String desc, Location d, byte[] gu) {
+    public Item(int id, String name, double distance, String desc, Location d) {
         itemName = name;
         if (distance < 0.05) {
             this.distance = "Near You";
@@ -27,6 +26,5 @@ public class Item {
         this.id = id;
         this.description = desc;
         this.dd = d;
-        this.img = gu;
     }
 }

@@ -87,8 +87,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.PersonViewHolder> 
                 intent.putExtra("distance", (persons.get(jj).distance));
                 intent.putExtra("description", (persons.get(jj).description));
                 intent.putExtra("location", new String[]{Double.toString(persons.get(jj).dd.getLatitude()), Double.toString(persons.get(jj).dd.getLongitude())});
-                intent.putExtra("image", persons.get(jj).img);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(intent);
+
             }
         });
     }

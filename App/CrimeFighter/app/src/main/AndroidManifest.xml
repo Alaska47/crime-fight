@@ -69,10 +69,6 @@
         </provider>
 
         <activity
-            android:name=".activities.LoginActivity"
-            android:screenOrientation="portrait">
-        </activity>
-        <activity
             android:name=".activities.ReportActivity"
             android:screenOrientation="portrait">
         </activity>
