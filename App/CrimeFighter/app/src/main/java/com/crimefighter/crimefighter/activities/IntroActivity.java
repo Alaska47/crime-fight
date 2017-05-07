@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.content.PermissionChecker;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AlphaAnimation;
@@ -31,6 +32,7 @@ import android.widget.Toast;
 import com.crimefighter.crimefighter.R;
 import com.crimefighter.crimefighter.services.RegistrationIntentService;
 import com.crimefighter.crimefighter.utils.QuickstartPreferences;
+import com.crimefighter.crimefighter.utils.UnCaughtException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,7 +46,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Random;
 import java.util.TimerTask;
 
-public class IntroActivity extends AppCompatActivity {
+public class IntroActivity extends BaseActivity {
 
     private Typeface mTypeface;
     private TextView mTitleTextView;
@@ -56,6 +58,8 @@ public class IntroActivity extends AppCompatActivity {
 
     final String userID = Integer.toString(1000 + (new Random()).nextInt(2000 - 1000 + 1));
     private static final int REQUEST_FINE_LOCATION=0;
+
+    private static final int PERMISSIONS_MAP = 1337;
 
     FirebaseAuth mAuth;
 
@@ -88,6 +92,29 @@ public class IntroActivity extends AppCompatActivity {
         if(getData("firstRun").equals("")) {
             storeData("UserID", userID);
             storeData("firstRun", "done");
+        }
+
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+            Log.i("gu", "started");
+        }
+
+        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                SharedPreferences sharedPreferences =
+                        PreferenceManager.getDefaultSharedPreferences(context);
+                boolean sentToken = sharedPreferences
+                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+            }
+        };
+        registerReceiver();
+
+        if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    PERMISSIONS_MAP);
         }
 
         LinearLayout rlayout = (LinearLayout) findViewById(R.id.activity_intro);
@@ -136,27 +163,29 @@ public class IntroActivity extends AppCompatActivity {
 
         mIntroText.startAnimation(in);
 
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-            Log.i("gu", "started");
-        }
 
-        mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                SharedPreferences sharedPreferences =
-                        PreferenceManager.getDefaultSharedPreferences(context);
-                boolean sentToken = sharedPreferences
-                        .getBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false);
+    }
+
+    public boolean selfPermissionGranted(String permission) {
+        // For Android < Android M, self permissions are always granted.
+        boolean result = true;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // targetSdkVersion >= Android M, we can
+                // use Context#checkSelfPermission
+                result = checkSelfPermission(permission)
+                        == PackageManager.PERMISSION_GRANTED;
             }
-        };
-        registerReceiver();
-
-        if(Build.VERSION.RELEASE.equals("6.0.1")) {
-            loadPermissions(Manifest.permission.ACCESS_FINE_LOCATION,REQUEST_FINE_LOCATION);
+            else {
+                // targetSdkVersion < Android M, we have to use PermissionChecker
+                result = PermissionChecker.checkSelfPermission(this, permission)
+                        == PermissionChecker.PERMISSION_GRANTED;
+            }
         }
+
+        return result;
     }
 
     @Override

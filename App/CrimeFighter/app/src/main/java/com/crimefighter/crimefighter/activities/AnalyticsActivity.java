@@ -7,27 +7,41 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.location.Location;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.PermissionChecker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
+import com.crimefighter.crimefighter.utils.UnCaughtException;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.maps.android.SphericalUtil;
 
 import java.io.BufferedReader;
@@ -36,14 +50,22 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class AnalyticsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class AnalyticsActivity extends BaseActivity implements OnMapReadyCallback {
 
     private static final int PERMISSIONS_MAP = 1337;
     private static Location userLoc;
@@ -51,20 +73,35 @@ public class AnalyticsActivity extends AppCompatActivity implements OnMapReadyCa
     private static GoogleMap mMap;
     private Bundle mBundle;
 
+    final String host = "71.171.96.88";
+    final int portNumber = 914;
+
+    private static ArrayList<Double[]> dubs = new ArrayList<>();
+
+    public boolean checkPermission(){
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                ){//Can add more as per requirement
+
+            return false;
+        }
+        return true;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_analytics);
 
-        if (!selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || !selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                    PERMISSIONS_MAP);
-        }
         try {
             MapsInitializer.initialize(this);
         } catch (Exception e) {
             Log.e("mapview", "", e);
         }
+
+        Typeface mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
+        Button mReportButton = (Button) findViewById(R.id.report_button1234);
+        mReportButton.setTypeface(mTypeface);
 
         mMapView = (MapView) findViewById(R.id.map);
         mMapView.onCreate(mBundle);
@@ -76,6 +113,7 @@ public class AnalyticsActivity extends AppCompatActivity implements OnMapReadyCa
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+
       /*
       if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
       } else {
@@ -85,7 +123,8 @@ public class AnalyticsActivity extends AppCompatActivity implements OnMapReadyCa
 
         Log.d("DashboardFragment", "map ready");
 
-        if(selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+        if(checkPermission()) {
+            Log.d("Dash", "good");
             SmartLocation.with(this).location()
                     .oneFix()
                     .start(
@@ -104,16 +143,10 @@ public class AnalyticsActivity extends AppCompatActivity implements OnMapReadyCa
                             while (userLoc == null) {
                                 try {
                                     Thread.sleep(100);
-                                    if(System.currentTimeMillis() - startTime > 7500) {
+                                    if(System.currentTimeMillis() - startTime > 5000) {
                                         userLoc = new Location("");
-                                        userLoc.setLatitude(38.8175873);
-                                        userLoc.setLongitude(-77.1687371);
-                                        runOnUiThread(
-                                                new Runnable() {
-                                                    public void run() {
-                                                        Toast.makeText(getApplicationContext(), "Using default location", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
+                                        userLoc.setLatitude( -8.783195);
+                                        userLoc.setLongitude(-124.508523);
                                         break;
                                     }
                                     Log.d("WatchActivity", "searching");
@@ -123,47 +156,114 @@ public class AnalyticsActivity extends AppCompatActivity implements OnMapReadyCa
                                     e.printStackTrace();
                                 }
                             }
-                            LatLng myLatLng = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
-                            LatLng newLatLng = new LatLng(38.8977, -77.0365);
+                            LatLng newLatLng = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
                             LatLngBounds bounds = new LatLngBounds.Builder().
-                                    include(SphericalUtil.computeOffset(newLatLng, 8 * 1609.344d, 0)).
-                                    include(SphericalUtil.computeOffset(newLatLng, 8 * 1609.344d, 90)).
-                                    include(SphericalUtil.computeOffset(newLatLng, 8 * 1609.344d, 180)).
-                                    include(SphericalUtil.computeOffset(newLatLng, 8 * 1609.344d, 270)).build();
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 0)).
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 90)).
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 180)).
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 270)).build();
                             final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
-                            final List<Double[]> dubs = new ArrayList<>();
-                            List<String> lines = readLine("lat_long.txt");
-                            for(int i = 1; i < lines.size(); i++) {
-                                String lines1 = lines.get(i);
-                                String[] line = lines1.split("\t");
-                                Double[] dd = {Double.parseDouble(line[0]), Double.parseDouble(line[1])};
-                                dubs.add(dd);
+                            String fin = "";
+                            try {
+                                fin = new MapItemsRetriever().execute().get();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
                             }
-                            Log.d("len", (dubs.size() + ""));
+                            String[] fin1 = fin.split(",");
+                            for(int i = 0; i < fin1.length; i+= 2) {
+                                Double[] d = new Double[2];
+                                d[0] = Double.parseDouble(fin1[i]);
+                                d[1] = Double.parseDouble(fin1[i+1]);
+                                dubs.add(d);
+                            }
+                            final BitmapDescriptor currentLocation = BitmapDescriptorFactory.fromBitmap(bitmapSizeByScale(BitmapFactory.decodeResource(getResources(), R.drawable.current_location), 0.4f));
+                            final BitmapDescriptor redPin = BitmapDescriptorFactory.fromBitmap(bitmapSizeByScale(BitmapFactory.decodeResource(getResources(), R.drawable.red_pin), 0.4f));
                             runOnUiThread(
                                     new Runnable() {
                                         public void run() {
                                             mMap.moveCamera(cameraUpdate);
                                             mMap.moveCamera(cameraUpdate);
-                                            int d1 = 0;
-                                            for(Double[] d : dubs) {
-                                                d1 += 1;
-                                                mMap.addMarker(new MarkerOptions().position(new LatLng(d[0], d[1])).icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScale(BitmapFactory.decodeResource(getResources(), R.drawable.red_pin), 0.4f))));
-                                                if(d1 > 200)
-                                                    break;
+                                            Marker home = mMap.addMarker(new MarkerOptions().position(new LatLng(userLoc.getLatitude(), userLoc.getLongitude())).icon(currentLocation));
+                                            for(Double[] a : dubs) {
+                                                mMap.addMarker(new MarkerOptions().position(new LatLng(a[0], a[1])).icon(redPin));
                                             }
-                                            Marker home = mMap.addMarker(new MarkerOptions().position(new LatLng(userLoc.getLatitude(), userLoc.getLongitude())).icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScale(BitmapFactory.decodeResource(getResources(), R.drawable.current_location), 0.4f))));
                                         }
                                     });
                         }
                     }).start();
         }
         else {
+
+            new Thread(
+                    new Runnable() {
+                        public void run() {
+
+                            userLoc = new Location("");
+                            userLoc.setLatitude( -8.783195);
+                            userLoc.setLongitude(-124.508523);
+
+                            LatLng newLatLng = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
+                            LatLngBounds bounds = new LatLngBounds.Builder().
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 0)).
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 90)).
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 180)).
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 270)).build();
+                            final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
+                            String fin = "";
+                            try {
+                                fin = new MapItemsRetriever().execute().get();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
+                            String[] fin1 = fin.split(",");
+                            for(int i = 0; i < fin1.length; i+= 2) {
+                                Double[] d = new Double[2];
+                                d[0] = Double.parseDouble(fin1[i]);
+                                d[1] = Double.parseDouble(fin1[i+1]);
+                                dubs.add(d);
+                            }
+                            final BitmapDescriptor currentLocation = BitmapDescriptorFactory.fromBitmap(bitmapSizeByScale(BitmapFactory.decodeResource(getResources(), R.drawable.current_location), 0.4f));
+                            final BitmapDescriptor redPin = BitmapDescriptorFactory.fromBitmap(bitmapSizeByScale(BitmapFactory.decodeResource(getResources(), R.drawable.red_pin), 0.4f));
+                            runOnUiThread(
+                                    new Runnable() {
+                                        public void run() {
+                                            mMap.moveCamera(cameraUpdate);
+                                            mMap.moveCamera(cameraUpdate);
+                                            Marker home = mMap.addMarker(new MarkerOptions().position(new LatLng(userLoc.getLatitude(), userLoc.getLongitude())).icon(currentLocation));
+                                            for(Double[] a : dubs) {
+                                                mMap.addMarker(new MarkerOptions().position(new LatLng(a[0], a[1])).icon(redPin));
+                                            }
+                                        }
+                                    });
+                        }
+                    }).start();
+
             Log.d("Dash", "bad");
         }
         mMap.getUiSettings().setScrollGesturesEnabled(true);
 
     }
+
+
+    private void getUserLocation() {
+        if (selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            SmartLocation.with(this).location()
+                    .oneFix()
+                    .start(
+                            new OnLocationUpdatedListener() {
+                                @Override
+                                public void onLocationUpdated(Location location) {
+                                    userLoc = location;
+                                    Log.d("Got location", location.toString());
+                                }
+                            });
+        }
+    }
+
 
     public List<String> readLine(String path) {
         List<String> mLines = new ArrayList<>();
@@ -254,5 +354,59 @@ public class AnalyticsActivity extends AppCompatActivity implements OnMapReadyCa
     public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
+    }
+
+    class MapItemsRetriever extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+        }
+        @Override
+        protected String doInBackground (Void...params){
+            Socket socket = null;
+            ObjectOutputStream oos = null;
+            ObjectInputStream ois = null;
+            String message = "";
+            try {
+                socket = new Socket(host, portNumber);
+                oos = new ObjectOutputStream(socket.getOutputStream());
+                ois = new ObjectInputStream(socket.getInputStream());
+                String commandStr = "7," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude());
+                Log.d("commandStr", commandStr);
+                oos.writeObject(commandStr);
+                message = (String) ois.readObject();
+                ois.close();
+                oos.close();
+                socket.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return message;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Log.d("DashboardFragment", "Permission result");
+        switch (requestCode) {
+
+            case PERMISSIONS_MAP: {
+                Log.d("DashboardFragment", "Permission result");
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    userLoc = new Location("");
+                    userLoc.setLatitude( -8.783195);
+                    userLoc.setLongitude(-124.508523);
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }

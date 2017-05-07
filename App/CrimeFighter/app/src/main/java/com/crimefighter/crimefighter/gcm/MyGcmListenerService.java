@@ -8,6 +8,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,6 +22,8 @@ import com.crimefighter.crimefighter.activities.FoundActivity;
 import com.crimefighter.crimefighter.activities.MainActivity;
 import com.crimefighter.crimefighter.activities.StolenActivity;
 import com.google.android.gms.gcm.GcmListenerService;
+
+import java.util.Random;
 
 public class MyGcmListenerService extends GcmListenerService {
 
@@ -72,8 +75,10 @@ public class MyGcmListenerService extends GcmListenerService {
                 Log.d("NotificationShits", "recovery");
             }
             else if(cse[0].equalsIgnoreCase("stolen")) {
-                sendNotificationStolen(cse);
-                Log.d("NotificationShits", "stolen");
+                if(getData("createdWatch").equals("true")) {
+                    sendNotificationStolen(cse);
+                    Log.d("NotificationShits", "stolen");
+                }
             }
             else
                 sendNotificationFound();
@@ -82,6 +87,16 @@ public class MyGcmListenerService extends GcmListenerService {
         // [END_EXCLUDE]
     }
     // [END receive_message]
+
+    public void storeData(String key, String value) {
+        SharedPreferences.Editor editor = getSharedPreferences("XPLORE_PREFS", Context.MODE_PRIVATE).edit();
+        editor.putString(key,value);
+        editor.apply();
+    }
+
+    public String getData(String key) {
+        return getSharedPreferences("XPLORE_PREFS", Context.MODE_PRIVATE).getString(key, "");
+    }
 
     /**
      * Create and show a simple notification containing the received GCM message.
@@ -96,7 +111,7 @@ public class MyGcmListenerService extends GcmListenerService {
         intent.putExtra("distance", message[3]);
         intent.putExtra("stealID", message[4]);
         intent.putExtra("location", message[5] + "," + message[6]);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)(Math.random()*100) /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
         Log.d("NotificationShits", "finished extras");
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -121,7 +136,7 @@ public class MyGcmListenerService extends GcmListenerService {
     private void sendNotificationRecovery(String[] message) {
         Intent intent = new Intent(this, MainActivity.class); //updateintent
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)(Math.random()*100) /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -136,13 +151,13 @@ public class MyGcmListenerService extends GcmListenerService {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(1 /* ID of notification */, notificationBuilder.build());
     }
 
     private void sendNotificationFound() {
         Intent intent = new Intent(this, FoundActivity.class); //updateintent
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int)(Math.random()*100) /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -151,12 +166,12 @@ public class MyGcmListenerService extends GcmListenerService {
                 .setContentText("Your item has been found!") //update message
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
-                .setSmallIcon(R.drawable.ic_action_name) //update icon
+                .setSmallIcon(R.drawable.mini_logo) //update icon
                 .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(2 /* ID of notification */, notificationBuilder.build());
     }
 }

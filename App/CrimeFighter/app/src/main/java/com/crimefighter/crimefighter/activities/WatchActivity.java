@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
 import com.crimefighter.crimefighter.utils.SingleShotLocationProvider;
+import com.crimefighter.crimefighter.utils.UnCaughtException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -58,9 +59,11 @@ import java.util.concurrent.ExecutionException;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class WatchActivity extends AppCompatActivity {
+public class WatchActivity extends BaseActivity {
 
     private static Location userLoc;
+
+    private static final int PERMISSIONS_MAP = 1337;
 
     private Typeface mTypeface;
     private TextView mTitle;
@@ -91,8 +94,6 @@ public class WatchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_watch);
         mStorageRef = FirebaseStorage.getInstance().getReference();
-
-
 
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mTitle = (TextView)findViewById(R.id.title);
@@ -125,14 +126,16 @@ public class WatchActivity extends AppCompatActivity {
                 new Thread(
                         new Runnable() {
                             public void run() {
+                                mReportButton.setEnabled(false);
+                                getUserLocation();
                                 long startTime = System.currentTimeMillis();
                                 while (userLoc == null) {
                                     try {
                                         Thread.sleep(100);
                                         if(System.currentTimeMillis() - startTime > 7500) {
                                             userLoc = new Location("");
-                                            userLoc.setLatitude(38.8175873);
-                                            userLoc.setLongitude(-77.1687371);
+                                            userLoc.setLatitude( -8.783195);
+                                            userLoc.setLongitude(-124.508523);
                                             runOnUiThread(
                                                     new Runnable() {
                                                         public void run() {
@@ -153,12 +156,16 @@ public class WatchActivity extends AppCompatActivity {
                                         new Runnable() {
                                             public void run() {
                                                 sItemName = mItemName.getText().toString();
+                                                if(sItemName.isEmpty()) sItemName = "Default Title";
                                                 sTime = mTime.getText().toString();
+                                                if(sTime.isEmpty()) sTime = "4:20 PM";
                                                 sDescription = mDescription.getText().toString();
+                                                if(sDescription.isEmpty()) sDescription = "Default Description";
                                             }
                                         });
                                 try {
                                     new WatchRequestSubmit().execute().get();
+                                    storeData("createdWatch", "true");
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
                                 } catch (ExecutionException e) {
@@ -189,6 +196,21 @@ public class WatchActivity extends AppCompatActivity {
 
     }
 
+    private void getUserLocation() {
+        if (selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            SmartLocation.with(this).location()
+                    .oneFix()
+                    .start(
+                            new OnLocationUpdatedListener() {
+                                @Override
+                                public void onLocationUpdated(Location location) {
+                                    userLoc = location;
+                                    Log.d("Got location", location.toString());
+                                }
+                            });
+        }
+    }
+
     void checkPermission() {
         //select which permission you want
         final String permission = Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -201,19 +223,6 @@ public class WatchActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case REQUEST_RUNTIME_PERMISSION:
-                final int numOfRequest = grantResults.length;
-                final boolean isGranted = numOfRequest == 1
-                        && PackageManager.PERMISSION_GRANTED == grantResults[numOfRequest - 1];
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
-
     public Bitmap bitmapSizeByScale(Bitmap bitmapIn, float scall_zero_to_one_f) {
 
         Bitmap bitmapOut = Bitmap.createScaledBitmap(bitmapIn,
@@ -223,23 +232,26 @@ public class WatchActivity extends AppCompatActivity {
         return bitmapOut;
     }
 
-    private void getUserLocation() {
-        SmartLocation.with(this).location()
-                .oneFix()
-                .start(
-                        new OnLocationUpdatedListener() {
-                            @Override
-                            public void onLocationUpdated(Location location) {
-                                userLoc = location;
-                                Log.d("WatchActivity", location.toString());
-                            }
-                        });
-        SingleShotLocationProvider.requestSingleUpdate(getApplicationContext(),
-                new SingleShotLocationProvider.LocationCallback() {
-                    @Override public void onNewLocationAvailable(SingleShotLocationProvider.GPSCoordinates location) {
-                        Log.d("WatchActivity", "my location is " + location.toString());
-                    }
-                });
+    public boolean selfPermissionGranted(String permission) {
+        // For Android < Android M, self permissions are always granted.
+        boolean result = true;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // targetSdkVersion >= Android M, we can
+                // use Context#checkSelfPermission
+                result = checkSelfPermission(permission)
+                        == PackageManager.PERMISSION_GRANTED;
+            }
+            else {
+                // targetSdkVersion < Android M, we have to use PermissionChecker
+                result = PermissionChecker.checkSelfPermission(this, permission)
+                        == PermissionChecker.PERMISSION_GRANTED;
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -292,7 +304,7 @@ public class WatchActivity extends AppCompatActivity {
                 socket = new Socket(host, portNumber);
                 oos = new ObjectOutputStream(socket.getOutputStream());
                 ois = new ObjectInputStream(socket.getInputStream());
-                String commandStr = "3," + getData("UserID") + "," + sItemName + "," + sDescription + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude());
+                String commandStr = "3," + getData("UserID") + "," + sItemName.replaceAll(","," ") + "," + sDescription.replaceAll(","," ") + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude());
                 Log.d("commandStr", commandStr);
                 oos.writeObject(commandStr);
                 message = (String) ois.readObject();
@@ -319,15 +331,8 @@ public class WatchActivity extends AppCompatActivity {
                 oos.close();
                 socket.close();
                 image.delete();
-            } catch (UnknownHostException e) {
-                return "erroruhe";
-            } catch (SocketTimeoutException e) {
-                return "errorste";
             } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                return sw.toString();
+                e.printStackTrace();
             }
             return "";
         }
@@ -448,5 +453,29 @@ public class WatchActivity extends AppCompatActivity {
         return BitmapFactory.decodeFile(path, options);
     }
 
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Log.d("DashboardFragment", "Permission result");
+        switch (requestCode) {
+
+            case PERMISSIONS_MAP: {
+                Log.d("DashboardFragment", "Permission result");
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    userLoc = new Location("");
+                    userLoc.setLatitude( -8.783195);
+                    userLoc.setLongitude(-124.508523);
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
 
 }

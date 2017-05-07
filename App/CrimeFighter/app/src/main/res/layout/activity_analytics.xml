@@ -11,7 +11,7 @@
     tools:context="com.crimefighter.crimefighter.activities.AnalyticsActivity">
 
     <Button
-        android:id="@+id/report_button"
+        android:id="@+id/report_button1234"
         android:layout_width="match_parent"
         android:layout_height="60sp"
         android:background="@color/black"

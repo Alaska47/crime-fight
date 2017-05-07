@@ -100,6 +100,17 @@
         </android.support.v4.widget.SwipeRefreshLayout>
 
         <TextView
+            android:id="@+id/empty_view"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="5"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="15sp"
+            android:visibility="gone"
+            android:text="No watches exist in your area!" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="60dp"/>
 

@@ -5,6 +5,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -18,6 +19,7 @@ import android.graphics.Typeface;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.annotation.IntegerRes;
 import android.support.design.widget.FloatingActionButton;
@@ -26,22 +28,28 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.content.PermissionChecker;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
+import com.crimefighter.crimefighter.game.Main1Activity;
+import com.crimefighter.crimefighter.game.MyGame;
 import com.crimefighter.crimefighter.services.AlarmReceiver;
 import com.crimefighter.crimefighter.services.RegistrationIntentService;
 import com.crimefighter.crimefighter.utils.Item;
 import com.crimefighter.crimefighter.utils.QuickstartPreferences;
 import com.crimefighter.crimefighter.utils.RVAdapter;
+import com.crimefighter.crimefighter.utils.UnCaughtException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -66,7 +74,7 @@ import java.util.concurrent.ExecutionException;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     public static Typeface mTypeface;
     private TextView mTitleTextView;
@@ -74,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mRemTextView;
     private TextView mSolvNumTextView;
     private TextView mSolvTextView;
+    private TextView mEmptyText;
     private Button mButton;
     private FloatingActionButton fab;
     private FloatingActionButton fab1;
@@ -89,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
     final String host = "71.171.96.88";
     final int portNumber = 914;
 
+    private static final int PERMISSIONS_MAP = 1337;
+
     private SwipeRefreshLayout swipeContainer;
 
 
@@ -99,11 +110,57 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkPermission();
-
         mTypeface = Typeface.createFromAsset(getAssets(),"fonts/montserrat.ttf");
         mTitleTextView = (TextView)findViewById(R.id.main_title);
         mTitleTextView.setTypeface(mTypeface);
+
+        mEmptyText = (TextView)findViewById(R.id.empty_view);
+        mEmptyText.setTypeface(mTypeface);
+
+        mTitleTextView.setOnTouchListener(new View.OnTouchListener() {
+            Handler handler = new Handler();
+
+            int numberOfTaps = 0;
+            long lastTapTimeMs = 0;
+            long touchDownMs = 0;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        touchDownMs = System.currentTimeMillis();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        handler.removeCallbacksAndMessages(null);
+
+                        if ((System.currentTimeMillis() - touchDownMs) > ViewConfiguration.getTapTimeout() + 500) {
+                            //it was not a tap
+
+                            numberOfTaps = 0;
+                            lastTapTimeMs = 0;
+                            break;
+                        }
+
+                        if (numberOfTaps > 0
+                                && (System.currentTimeMillis() - lastTapTimeMs) < ViewConfiguration.getDoubleTapTimeout()) {
+                            numberOfTaps += 1;
+                        } else {
+                            numberOfTaps = 1;
+                        }
+
+                        lastTapTimeMs = System.currentTimeMillis();
+
+                        if (numberOfTaps == 3) {
+                            Intent intent = new Intent(getApplicationContext(), Main1Activity.class);
+                            startActivity(intent);
+                        }
+                }
+
+                return true;
+            }
+        });
+
         mRemNumTextView = (TextView)findViewById(R.id.main_remaining_number);
         mRemNumTextView.setTypeface(mTypeface);
         mRemTextView = (TextView)findViewById(R.id.main_remaining);
@@ -112,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
         mSolvNumTextView.setTypeface(mTypeface);
         mSolvTextView = (TextView)findViewById(R.id.main_solved);
         mSolvTextView.setTypeface(mTypeface);
+
+
 
         fab = (FloatingActionButton) findViewById(R.id.fabio1);
         fab.setImageBitmap(textAsBitmap("!", 40, Color.WHITE));
@@ -160,28 +219,34 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(
                         new Runnable() {
                             public void run() {
-                                long startTime = System.currentTimeMillis();
-                                while (userLoc == null) {
-                                    try {
-                                        Thread.sleep(100);
-                                        if(System.currentTimeMillis() - startTime > 7500) {
-                                            userLoc = new Location("");
-                                            userLoc.setLatitude(38.8175873);
-                                            userLoc.setLongitude(-77.1687371);
-                                            runOnUiThread(
-                                                    new Runnable() {
-                                                        public void run() {
-                                                            Toast.makeText(getApplicationContext(), "Using default location", Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    });
-                                            break;
-                                        }
-                                        Log.d("WatchActivity", "searching");
+                                if(checkPermission()) {
+                                    getUserLocation();
+                                    long startTime = System.currentTimeMillis();
+                                    while (userLoc == null) {
+                                        try {
+                                            Thread.sleep(100);
+                                            if (System.currentTimeMillis() - startTime > 7500) {
+                                                userLoc = new Location("");
+                                                userLoc.setLatitude( -8.783195);
+                                                userLoc.setLongitude(-124.508523);
+                                                runOnUiThread(
+                                                        new Runnable() {
+                                                            public void run() {
+                                                                Toast.makeText(getApplicationContext(), "Using default location", Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
+                                                break;
+                                            }
+                                            Log.d("WatchActivity", "searching");
 
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
-                                    catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
+                                } else {
+                                    userLoc = new Location("");
+                                    userLoc.setLatitude( -8.783195);
+                                    userLoc.setLongitude(-124.508523);
                                 }
                                 Log.d("WatchActivity", "got location");
                                 runOnUiThread(
@@ -199,6 +264,7 @@ public class MainActivity extends AppCompatActivity {
                                 } catch (ExecutionException e) {
                                     e.printStackTrace();
                                 }
+                                Log.d("WatchActivity", mess);
                                 final String gg = mess;
                                 runOnUiThread(
                                         new Runnable() {
@@ -217,13 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
         swipeContainer.setOnRefreshListener(swipeRefreshListner);
 
-        swipeContainer.post(new Runnable() {
-            @Override public void run() {
-                swipeContainer.setRefreshing(true);
-                // directly call onRefresh() method
-                swipeRefreshListner.onRefresh();
-            }
-        });
+
 
         //TODO: remove temp
 
@@ -235,62 +295,57 @@ public class MainActivity extends AppCompatActivity {
         initializeAdapter();
         //
 
-
+        swipeContainer.post(new Runnable() {
+            @Override public void run() {
+                swipeContainer.setRefreshing(true);
+                // directly call onRefresh() method
+                swipeRefreshListner.onRefresh();
+            }
+        });
     }
 
-    public void checkPermission(){
+    public boolean itemAlreadyServed(Item a, List<Item> b) {
+        for(Item c : b) {
+            if(c.itemName.equals(a.itemName) || c.id == a.id) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+    public boolean checkPermission(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
                 ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 ){//Can add more as per requirement
 
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
-                    123);
+            return false;
         }
+        return true;
     }
 
     private void getUserLocation() {
-        SmartLocation.with(this).location()
-                .oneFix()
-                .start(
-                        new OnLocationUpdatedListener() {
-                            @Override
-                            public void onLocationUpdated(Location location) {
-                                userLoc = location;
-                                Log.d("Got location", location.toString());
-                            }
-                        });
-    }
-
-    public void scheduleAlarm() {
-        // Construct an intent that will execute the AlarmReceiver
-        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        // Create a PendingIntent to be triggered when the alarm goes off
-        final PendingIntent pIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        // Setup periodic alarm every 5 seconds
-        long firstMillis = System.currentTimeMillis(); // alarm is set right away
-        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
-        // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis + 60*1000,
-                60*1000L, pIntent);
-    }
-
-    public void cancelAlarm() {
-        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        final PendingIntent pIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        alarm.cancel(pIntent);
-
+            SmartLocation.with(this).location()
+                    .oneFix()
+                    .start(
+                            new OnLocationUpdatedListener() {
+                                @Override
+                                public void onLocationUpdated(Location location) {
+                                    userLoc = location;
+                                    Log.d("Got location", location.toString());
+                                }
+                            });
     }
 
     private void initializeData(String input) {
         Log.d("crimefighter", input);
-        if(input.length() < 20) {
-            //items.add(new Item(1, "Chocolate", 0.05, "Snickers packet", userLoc, new byte[0]));
+        if(input.equals(",")) {
+            swipeContainer.setVisibility(View.GONE);
+            mEmptyText.setVisibility(View.VISIBLE);
         } else {
+            swipeContainer.setVisibility(View.VISIBLE);
+            mEmptyText.setVisibility(View.GONE);
             String[] values = input.split(",");
             int num = Integer.parseInt(values[0]);
             for (int i = 0; i < num; i++) {
@@ -298,10 +353,13 @@ public class MainActivity extends AppCompatActivity {
                 Location ad = userLoc;
                 ad.setLatitude(Double.parseDouble(values[i * 6 + 4]));
                 ad.setLongitude(Double.parseDouble(values[i * 6 + 5]));
-                try {
-                    items.add(new Item(Integer.parseInt(values[i * 6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
-                } catch (Exception e) {
-                    items.add(new Item(Integer.parseInt(values[i * 6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
+                Item addition = new Item(Integer.parseInt(values[i * 6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad);
+                if(!itemAlreadyServed(addition,items)) {
+                    try {
+                        items.add(new Item(Integer.parseInt(values[i * 6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
+                    } catch (Exception e) {
+                        items.add(new Item(Integer.parseInt(values[i * 6 + 6]), values[i * 6 + 1], Double.parseDouble(values[i * 6 + 3]), values[i * 6 + 2], ad));
+                    }
                 }
             }
         }
@@ -354,12 +412,7 @@ public class MainActivity extends AppCompatActivity {
                 oos.close();
                 socket.close();
             } catch (Exception e) {
-                StringWriter writer = new StringWriter();
-                PrintWriter printWriter = new PrintWriter( writer );
-                e.printStackTrace( printWriter );
-                printWriter.flush();
-                String stackTrace = writer.toString();
-                Log.d("currStack", stackTrace);
+                e.printStackTrace();
             }
             return message;
         }
@@ -402,5 +455,28 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Log.d("DashboardFragment", "Permission result");
+        switch (requestCode) {
+
+            case PERMISSIONS_MAP: {
+                Log.d("DashboardFragment", "Permission result");
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    userLoc = new Location("");
+                    userLoc.setLatitude( -8.783195);
+                    userLoc.setLongitude(-124.508523);
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
 
 }

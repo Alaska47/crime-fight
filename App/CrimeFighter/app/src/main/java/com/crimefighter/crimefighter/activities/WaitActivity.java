@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
+import com.crimefighter.crimefighter.utils.UnCaughtException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FileDownloadTask;
@@ -34,7 +35,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
-public class WaitActivity extends AppCompatActivity {
+public class WaitActivity extends BaseActivity {
 
     public static Typeface mTypeface;
     private TextView mNameTextView;
@@ -146,6 +147,7 @@ public class WaitActivity extends AppCompatActivity {
             }
         });
 
+
         mDistanceTextView = (TextView)findViewById(R.id.distance);
         mDistanceTextView.setTypeface(mTypeface);
         if(distance.contains("Near")) {
@@ -161,6 +163,7 @@ public class WaitActivity extends AppCompatActivity {
         mButtonHere.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mButtonHere.setEnabled(false);
                 try {
                     new WaitItemVerifier().execute("y").get();
                 } catch (InterruptedException e) {
@@ -184,6 +187,7 @@ public class WaitActivity extends AppCompatActivity {
         mButtonGone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mButtonGone.setEnabled(false);
                 try {
                     new WaitItemVerifier().execute("n").get();
                 } catch (InterruptedException e) {
@@ -224,17 +228,12 @@ public class WaitActivity extends AppCompatActivity {
                 oos.writeObject(commandStr);
                 oos.close();
                 socket.close();
-            } catch (UnknownHostException e) {
-                return "erroruhe";
-            } catch (SocketTimeoutException e) {
-                return "errorste";
             } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                return sw.toString();
+                e.printStackTrace();
             }
             return "";
         }
     }
+
+
 }

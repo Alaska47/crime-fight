@@ -131,6 +131,38 @@
         </activity>
         <activity android:name=".activities.AnalyticsActivity">
         </activity>
+
+        <activity
+            android:name=".game.Main1Activity"
+            android:configChanges="orientation"
+            android:label="CrimeFighter"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".game.MyGame"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".game.Main2Activity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".game.Main3Activity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".game.HowToPlay"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".game.Levels"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

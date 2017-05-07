@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crimefighter.crimefighter.R;
+import com.crimefighter.crimefighter.utils.UnCaughtException;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,7 +48,7 @@ import java.util.concurrent.ExecutionException;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
 
-public class WitnessActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class WitnessActivity extends BaseActivity implements OnMapReadyCallback {
 
     private static final int PERMISSIONS_MAP = 1337;
     private static Location userLoc;
@@ -100,9 +101,13 @@ public class WitnessActivity extends AppCompatActivity implements OnMapReadyCall
         mReportButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mReportButton.setEnabled(false);
                 sTitle = mTitle.getText().toString();
-                sTime = mTitle.getText().toString();
+                if(sTitle.isEmpty()) sTitle = "Default Title";
+                sTime = mTime.getText().toString();
+                if(sTime.isEmpty()) sTime = "4:20 PM";
                 sDescription = mDescription.getText().toString();
+                if(sDescription.isEmpty()) sDescription = "Default Description";
 
                 try {
                     new WitnessActivitySender().execute().get();
@@ -149,7 +154,6 @@ public class WitnessActivity extends AppCompatActivity implements OnMapReadyCall
           mMap.setMyLocationEnabled(true);
       }
       */
-
         Log.d("DashboardFragment", "map ready");
 
         if(selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
@@ -174,8 +178,8 @@ public class WitnessActivity extends AppCompatActivity implements OnMapReadyCall
                                     Thread.sleep(100);
                                     if(System.currentTimeMillis() - startTime > 5000) {
                                         userLoc = new Location("");
-                                        userLoc.setLatitude(38.8175873);
-                                        userLoc.setLongitude(-77.1687371);
+                                        userLoc.setLatitude( -8.783195);
+                                        userLoc.setLongitude(-124.508523);
                                         break;
                                     }
                                     Log.d("WatchActivity", "searching");
@@ -204,10 +208,65 @@ public class WitnessActivity extends AppCompatActivity implements OnMapReadyCall
                     }).start();
         }
         else {
+
+            new Thread(
+                    new Runnable() {
+                        public void run() {
+                            getUserLocation();
+                            long startTime = System.currentTimeMillis();
+                            while (userLoc == null) {
+                                try {
+                                    Thread.sleep(100);
+                                    if(System.currentTimeMillis() - startTime > 5000) {
+                                        userLoc = new Location("");
+                                        userLoc.setLatitude( -8.783195);
+                                        userLoc.setLongitude(-124.508523);
+                                        break;
+                                    }
+                                    Log.d("WatchActivity", "searching");
+
+                                }
+                                catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            LatLng newLatLng = new LatLng(userLoc.getLatitude(), userLoc.getLongitude());
+                            LatLngBounds bounds = new LatLngBounds.Builder().
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 0)).
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 90)).
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 180)).
+                                    include(SphericalUtil.computeOffset(newLatLng, 1.5 * 1609.344d, 270)).build();
+                            final CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, 0);
+                            runOnUiThread(
+                                    new Runnable() {
+                                        public void run() {
+                                            mMap.moveCamera(cameraUpdate);
+                                            mMap.moveCamera(cameraUpdate);
+                                            Marker home = mMap.addMarker(new MarkerOptions().position(new LatLng(userLoc.getLatitude(), userLoc.getLongitude())).icon(BitmapDescriptorFactory.fromBitmap(bitmapSizeByScale(BitmapFactory.decodeResource(getResources(), R.drawable.red_pin), 0.4f))));
+                                        }
+                                    });
+                        }
+                    }).start();
+
             Log.d("Dash", "bad");
         }
         mMap.getUiSettings().setScrollGesturesEnabled(false);
 
+    }
+
+    private void getUserLocation() {
+        if (selfPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION) || selfPermissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            SmartLocation.with(this).location()
+                    .oneFix()
+                    .start(
+                            new OnLocationUpdatedListener() {
+                                @Override
+                                public void onLocationUpdated(Location location) {
+                                    userLoc = location;
+                                    Log.d("Got location", location.toString());
+                                }
+                            });
+        }
     }
 
     public boolean selfPermissionGranted(String permission) {
@@ -301,22 +360,39 @@ public class WitnessActivity extends AppCompatActivity implements OnMapReadyCall
             try {
                 socket = new Socket(host, portNumber);
                 oos = new ObjectOutputStream(socket.getOutputStream());
-                String commandStr = "6," + stealID + "," + Double.toString(userLoc.getLatitude()) + "," + Double.toString(userLoc.getLongitude()) + "," + sTitle + "," + sDescription + "," + sTime;
+                String commandStr = "6," + stealID + "," + Double.toString(userLoc.getLatitude())+ "," + Double.toString(userLoc.getLongitude()) + "," + sTitle.replaceAll(","," ") + "," + sDescription.replaceAll(","," ") + "," + sTime.replaceAll(","," ");
                 Log.d("commandStr", commandStr);
                 oos.writeObject(commandStr);
                 oos.close();
                 socket.close();
-            } catch (UnknownHostException e) {
-                return "erroruhe";
-            } catch (SocketTimeoutException e) {
-                return "errorste";
             } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                PrintWriter pw = new PrintWriter(sw);
-                e.printStackTrace(pw);
-                return sw.toString();
+                e.printStackTrace();
             }
             return "";
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        Log.d("DashboardFragment", "Permission result");
+        switch (requestCode) {
+
+            case PERMISSIONS_MAP: {
+                Log.d("DashboardFragment", "Permission result");
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    userLoc = new Location("");
+                    userLoc.setLatitude( -8.783195);
+                    userLoc.setLongitude(-124.508523);
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
     }
 }
